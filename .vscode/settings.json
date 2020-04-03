@@ -1,0 +1,35 @@
+{
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+
+  "eslint.autoFixOnSave": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    {
+      "language": "html",
+      "autoFix": true
+    },
+    {
+      "language": "typescript",
+      "autoFix": true
+    },
+    {
+      "language": "typescriptreact",
+      "autoFix": true
+    }
+  ],
+
+  "search.exclude": {
+    ".git": true,
+    ".eslintcache": true,
+    "dist": true,
+    "build": true,
+    "node_modules": true,
+    "npm-debug.log.*": true,
+    "yarn.lock": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}
