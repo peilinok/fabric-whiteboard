@@ -26,6 +26,10 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
-    "fabric": "^3.6.3"
+    "class-names": "^1.0.0",
+    "fabric": "^3.6.3",
+    "node-sass": "^4.13.1",
+    "prop-types": "^15.7.2",
+    "sass-loader": "^8.0.2"
   }
 }
