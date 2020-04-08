@@ -30,15 +30,12 @@ module.exports = {
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
-        test: /\.(png|jpg|gif)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 5000,
-            },
-          },
-        ],
+        test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 50000,
+          name: 'assets/images/[name].[ext]',
+        },
       },
     ],
   },

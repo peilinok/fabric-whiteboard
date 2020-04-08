@@ -1,0 +1,121 @@
+.fabric-whiteboard-toolbar {
+  position: absolute;
+
+  bottom: 10px;
+  right: 10px;
+
+  .fabric-whiteboard-toolbar-ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      line-height: 28px;
+      font-size: 28px;
+      //border-top: #dad7d9 solid 1px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+    }
+
+    li:hover {
+      background: #d8d3d8;
+    }
+
+    li.active {
+      background: #e34f51;
+    }
+
+    i {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      background-image: url('../assets/images/tools-28.png');
+      background-repeat: no-repeat;
+      margin: 1px;
+    }
+
+    .toolbar-ul-select {
+      background-position: -196px -28px;
+    }
+
+    .toolbar-ul-select.active {
+      background-position: 0px -56px !important;
+    }
+
+    .toolbar-ul-pen {
+      background-position: -140px -28px;
+    }
+
+    .toolbar-ul-pen.active {
+      background-position: -168px -28px;
+    }
+
+    .toolbar-ul-line {
+      background-position: -140px -56px;
+    }
+
+    .toolbar-ul-line.active {
+      background-position: -168px -56px;
+    }
+
+    .toolbar-ul-arrow {
+      background-position: -28px -84px;
+    }
+
+    .toolbar-ul-arrow.active {
+      background-position: -56px -84px;
+    }
+
+    .toolbar-ul-text {
+      background-position: -28px -56px;
+    }
+
+    .toolbar-ul-text.active {
+      background-position: -56px -56px;
+    }
+
+    .toolbar-ul-rectangle {
+      background-position: -196px -84px;
+    }
+
+    .toolbar-ul-rectangle.active {
+      background-position: 0px -112px;
+    }
+
+    .toolbar-ul-triangle {
+      background-position: -140px -112px;
+    }
+
+    .toolbar-ul-triangle.active {
+      background-position: -168px -112px;
+    }
+
+    .toolbar-ul-circle {
+      background-position: -84px -84px;
+    }
+
+    .toolbar-ul-circle.active {
+      background-position: -112px -84px;
+    }
+
+    .toolbar-ul-ellipse {
+      background-position: -140px -84px;
+    }
+
+    .toolbar-ul-ellipse.active {
+      background-position: -168px -84px;
+    }
+
+    .toolbar-ul-eraser {
+      background-position: -84px -140px;
+    }
+
+    .toolbar-ul-eraser.active {
+      background-position: -112px -140px;
+    }
+  }
+}
