@@ -14,9 +14,11 @@ class Board extends Component {
     this.state = {
       drawerColor: '#E34F51',
       drawerWidth: 2,
+      drawerFontSize: 24,
       isDrawing: false,
       moveCount: 1,
       preDrawerObj: undefined,
+      preTextObj: undefined,
       posFrom: { x: 0, y: 0 },
       posTo: { x: 0, y: 0 },
     }
@@ -169,7 +171,9 @@ class Board extends Component {
     const {
       drawerColor,
       drawerWidth,
+      drawerFontSize,
       preDrawerObj,
+      preTextObj,
       isDrawing,
       moveCount,
       posFrom,
@@ -179,8 +183,10 @@ class Board extends Component {
     if (isDrawing === false || !moveCount % 2) return
 
     let drawerObj = undefined
+    let textObj = undefined
 
     if (preDrawerObj !== undefined) window.canvas.remove(preDrawerObj)
+    if (textObj !== undefined) drawerFontSize.exitEditing()
 
     this.setState(
       {
@@ -197,16 +203,48 @@ class Board extends Component {
             )
             break
           case 'arrow':
+            drawerObj = drawer.drawArrow(
+              posFrom,
+              posTo,
+              drawerColor,
+              'rgba(255,255,255,0)',
+              drawerWidth
+            )
             break
           case 'text':
+            textObj = drawer.drawText(posFrom, drawerFontSize, drawerColor)
+            window.canvas.add(textObj)
+            textObj.enterEditing()
+            textObj.hiddenTextarea.focus()
+            this.setState({
+              preTextObj: textObj,
+            })
             break
           case 'rectangle':
+            drawerObj = drawer.drawRectangle(
+              posFrom,
+              posTo,
+              drawerColor,
+              drawerWidth
+            )
             break
           case 'triangle':
             break
           case 'circle':
+            drawerObj = drawer.drawCircle(
+              posFrom,
+              posTo,
+              drawerColor,
+              drawerWidth
+            )
             break
           case 'ellipse':
+            drawerObj = drawer.drawEllipse(
+              posFrom,
+              posTo,
+              drawerColor,
+              drawerWidth
+            )
             break
           default:
             break
