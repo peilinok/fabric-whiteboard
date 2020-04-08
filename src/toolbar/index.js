@@ -1,21 +1,20 @@
 import React, { Component } from 'react'
 import classNames from 'class-names'
+import PropTypes from 'prop-types'
 
 import modes from '../utils/mode'
 
 import './style.scss'
 
-export default class Toolbar extends Component {
+class Toolbar extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
       toolButtons: [],
-      activedButton: '',
     }
 
     this.generateToolButtons = this.generateToolButtons.bind(this)
-    this.handleModeClick = this.handleModeClick.bind(this)
   }
 
   componentDidMount() {
@@ -25,7 +24,10 @@ export default class Toolbar extends Component {
   }
 
   render() {
-    const { toolButtons, activedButton } = this.state
+    const { toolButtons } = this.state
+    const { visible, mode, onModeClick } = this.props
+
+    if (visible === false) return <div></div>
 
     return (
       <div className="fabric-whiteboard-toolbar">
@@ -37,16 +39,16 @@ export default class Toolbar extends Component {
             <li
               className={classNames(
                 'toolbar-ul-li',
-                btn.key === activedButton ? 'active' : ''
+                btn.key === mode ? 'active' : ''
               )}
               data={btn.key}
               title={btn.title}
-              onClick={() => this.handleModeClick(btn.key)}
+              onClick={() => onModeClick(btn.key)}
             >
               <i
                 className={classNames(
                   `toolbar-ul-${btn.key}`,
-                  btn.key === activedButton ? 'active' : ''
+                  btn.key === mode ? 'active' : ''
                 )}
               />
             </li>
@@ -67,11 +69,18 @@ export default class Toolbar extends Component {
 
     return toolButtons
   }
-
-  handleModeClick(mode) {
-    console.warn(mode)
-    this.setState({
-      activedButton: mode,
-    })
-  }
 }
+
+Toolbar.propTypes = {
+  visible: PropTypes.bool,
+  mode: PropTypes.oneOf(modes),
+  onModeClick: PropTypes.func,
+}
+
+Toolbar.defaultProps = {
+  visible: true,
+  mode: '',
+  onModeClick: () => {},
+}
+
+export default Toolbar
