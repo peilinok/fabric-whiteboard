@@ -12,13 +12,17 @@ class Board extends Component {
     super(props)
 
     this.state = {
+      drawerColor: '#E34F51',
+      drawerWidth: 2,
       isDrawing: false,
       moveCount: 1,
+      preDrawerObj: undefined,
       posFrom: { x: 0, y: 0 },
       posTo: { x: 0, y: 0 },
     }
 
     this.canvas = null
+    this.transpos = this.transpos.bind(this)
     this.handleCanvasMouseDown = this.handleCanvasMouseDown.bind(this)
     this.handleCanvasMouseUp = this.handleCanvasMouseUp.bind(this)
     this.handleCanvasMouseMove = this.handleCanvasMouseMove.bind(this)
@@ -29,6 +33,7 @@ class Board extends Component {
   }
 
   componentDidMount() {
+    const { drawerColor, drawerWidth } = this.state
     this.canvas = new fabric.Canvas('fabric-whiteboard-canvas', {
       isDrawingMode: false,
       skipTargetFind: true,
@@ -37,8 +42,8 @@ class Board extends Component {
     })
 
     window.canvas = this.canvas
-    window.canvas.freeDrawingBrush.color = '#E34F51'
-    window.canvas.freeDrawingBrush.width = 2
+    window.canvas.freeDrawingBrush.color = drawerColor
+    window.canvas.freeDrawingBrush.width = drawerWidth
     window.canvas.on('mouse:down', this.handleCanvasMouseDown)
     window.canvas.on('mouse:up', this.handleCanvasMouseUp)
     window.canvas.on('mouse:move', this.handleCanvasMouseMove)
@@ -48,6 +53,10 @@ class Board extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
+    //isDrawingMode  free drawing mode
+    //skipTargetFind all el can not select
+    //selectable can select
+    //selection show selection bounds
     if (nextProps.mode !== this.props.mode) {
       switch (nextProps.mode) {
         case 'select':
@@ -58,7 +67,7 @@ class Board extends Component {
           break
         case 'pen':
           window.canvas.isDrawingMode = true
-          window.canvas.skipTargetFind = false
+          window.canvas.skipTargetFind = true
           window.canvas.selectable = false
           window.canvas.selection = false
           break
@@ -70,7 +79,7 @@ class Board extends Component {
           break
         default:
           window.canvas.isDrawingMode = false
-          window.canvas.skipTargetFind = false
+          window.canvas.skipTargetFind = true
           window.canvas.selectable = false
           window.canvas.selection = false
           break
@@ -79,7 +88,7 @@ class Board extends Component {
   }
 
   render() {
-    const { visible, mode, size } = this.props
+    const { visible, size } = this.props
 
     if (visible === false) return <div></div>
 
@@ -93,6 +102,10 @@ class Board extends Component {
         />
       </div>
     )
+  }
+
+  transpos(pos) {
+    return { x: pos.x / window.zoom, y: pos.y / window.zoom }
   }
 
   handleCanvasMouseDown(options) {
@@ -113,6 +126,7 @@ class Board extends Component {
     this.setState({
       isDrawing: false,
       moveCount: 1,
+      preDrawerObj: undefined,
       posTo: {
         x: options.e.offsetX,
         y: options.e.offsetY,
@@ -152,16 +166,60 @@ class Board extends Component {
   }
 
   handleCanvasDrawing() {
-    const { isDrawing, moveCount, posFrom, posTo } = this.state
+    const {
+      drawerColor,
+      drawerWidth,
+      preDrawerObj,
+      isDrawing,
+      moveCount,
+      posFrom,
+      posTo,
+    } = this.state
     const { mode } = this.props
     if (isDrawing === false || !moveCount % 2) return
 
-    switch (mode) {
-      case 'pen':
-        break
-      default:
-        break
-    }
+    let drawerObj = undefined
+
+    if (preDrawerObj !== undefined) window.canvas.remove(preDrawerObj)
+
+    this.setState(
+      {
+        preDrawerObj: undefined,
+      },
+      () => {
+        switch (mode) {
+          case 'line':
+            drawerObj = drawer.drawLine(
+              posFrom,
+              posTo,
+              drawerColor,
+              drawerWidth
+            )
+            break
+          case 'arrow':
+            break
+          case 'text':
+            break
+          case 'rectangle':
+            break
+          case 'triangle':
+            break
+          case 'circle':
+            break
+          case 'ellipse':
+            break
+          default:
+            break
+        }
+
+        if (drawerObj !== undefined) {
+          window.canvas.add(drawerObj)
+          this.setState({
+            preDrawerObj: drawerObj,
+          })
+        }
+      }
+    )
   }
 }
 
