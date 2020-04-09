@@ -62,6 +62,14 @@
       background-position: -168px -56px;
     }
 
+    .toolbar-ul-dotline {
+      background-position: -196px -56px;
+    }
+
+    .toolbar-ul-dotline.active {
+      background-position: -0px -84px;
+    }
+
     .toolbar-ul-arrow {
       background-position: -28px -84px;
     }
@@ -116,6 +124,10 @@
 
     .toolbar-ul-eraser.active {
       background-position: -112px -140px;
+    }
+
+    .toolbar-ul-brush {
+      background-position: 0px 0px;
     }
   }
 }

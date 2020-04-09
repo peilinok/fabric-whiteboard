@@ -120,6 +120,7 @@ class Board extends Component {
           className="fabric-whiteboard-canvas"
           width={width}
           height={height}
+          style={{ width: width, height: height }}
         />
       </div>
     )
@@ -219,6 +220,14 @@ class Board extends Component {
         switch (mode) {
           case 'line':
             drawerObj = drawer.drawLine(
+              posFrom,
+              posTo,
+              drawerColor,
+              drawerWidth
+            )
+            break
+          case 'dotline':
+            drawerObj = drawer.drawDotLine(
               posFrom,
               posTo,
               drawerColor,

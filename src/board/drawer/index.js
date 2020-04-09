@@ -1,5 +1,6 @@
 import drawPen from './pen'
 import drawLine from './line'
+import drawDotLine from './dotline'
 import drawArrow from './arrow'
 import drawText from './text'
 import drawRectangle from './rectangle'
@@ -10,6 +11,7 @@ import drawEllipse from './ellipse'
 export {
   drawPen,
   drawLine,
+  drawDotLine,
   drawArrow,
   drawText,
   drawRectangle,
