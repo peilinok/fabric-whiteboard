@@ -60,6 +60,9 @@ class Board extends Component {
     //selectable can select
     //selection show selection bounds
     if (nextProps.mode !== this.props.mode) {
+      const { preDrawerObj, preTextObj } = this.state
+      if (preDrawerObj !== undefined) window.canvas.remove(preDrawerObj)
+      if (preTextObj !== undefined) preTextObj.exitEditing()
       switch (nextProps.mode) {
         case 'select':
           window.canvas.isDrawingMode = false
@@ -111,17 +114,22 @@ class Board extends Component {
   }
 
   handleCanvasMouseDown(options) {
-    this.setState({
-      isDrawing: true,
-      posFrom: {
-        x: options.e.offsetX,
-        y: options.e.offsetY,
+    this.setState(
+      {
+        isDrawing: true,
+        posFrom: {
+          x: options.e.offsetX,
+          y: options.e.offsetY,
+        },
+        posTo: {
+          x: options.e.offsetX,
+          y: options.e.offsetY,
+        },
       },
-      posTo: {
-        x: options.e.offsetX,
-        y: options.e.offsetY,
-      },
-    })
+      () => {
+        if (this.props.mode === 'text') this.handleCanvasDrawing()
+      }
+    )
   }
 
   handleCanvasMouseUp(options) {
@@ -152,8 +160,6 @@ class Board extends Component {
   handleCanvasSelectionCreated(e) {
     const { mode } = this.props
     if (mode !== 'eraser') return
-
-    console.info(mode)
 
     if (e.target._objects) {
       var etCount = e.target._objects.length
@@ -186,11 +192,12 @@ class Board extends Component {
     let textObj = undefined
 
     if (preDrawerObj !== undefined) window.canvas.remove(preDrawerObj)
-    if (textObj !== undefined) drawerFontSize.exitEditing()
+    if (preTextObj !== undefined) preTextObj.exitEditing()
 
     this.setState(
       {
         preDrawerObj: undefined,
+        preTextObj: undefined,
       },
       () => {
         switch (mode) {
@@ -216,9 +223,6 @@ class Board extends Component {
             window.canvas.add(textObj)
             textObj.enterEditing()
             textObj.hiddenTextarea.focus()
-            this.setState({
-              preTextObj: textObj,
-            })
             break
           case 'rectangle':
             drawerObj = drawer.drawRectangle(
@@ -229,6 +233,13 @@ class Board extends Component {
             )
             break
           case 'triangle':
+            drawerObj = drawer.drawTriangle(
+              posFrom,
+              posTo,
+              drawerColor,
+              drawerWidth,
+              true
+            )
             break
           case 'circle':
             drawerObj = drawer.drawCircle(
@@ -252,10 +263,12 @@ class Board extends Component {
 
         if (drawerObj !== undefined) {
           window.canvas.add(drawerObj)
-          this.setState({
-            preDrawerObj: drawerObj,
-          })
         }
+
+        this.setState({
+          preDrawerObj: drawerObj,
+          preTextObj: textObj,
+        })
       }
     )
   }
