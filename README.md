@@ -42,7 +42,7 @@ $ yarn add fabric-whiteboard
 ### Usage
 
 ```js
-class App extends Component {
+class class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -80,6 +80,40 @@ class App extends Component {
           mode={mode}
           onModeClick={this.handleOnModeClick}
         />
+        <div className="toolbar">
+          <button
+            className="toolbar-button"
+            onClick={() => {
+              const jsonData = getWhiteBoardData()
+              console.info(JSON.stringify(jsonData))
+              const domTextarea = document.getElementById('toolbar-textarea')
+              if (domTextarea) {
+                domTextarea.value = JSON.stringify(jsonData)
+              }
+            }}
+          >
+            Get
+          </button>
+
+          <textarea id="toolbar-textarea"></textarea>
+          <button
+            className="toolbar-button"
+            onClick={() => {
+              const domTextarea = document.getElementById('toolbar-textarea')
+              if (
+                domTextarea &&
+                domTextarea.value &&
+                domTextarea.value !== ''
+              ) {
+                loadWhiteBoardData(domTextarea.value, (e) => {
+                  console.info('load whiteboard data succed', e)
+                })
+              }
+            }}
+          >
+            Set
+          </button>
+        </div>
       </div>
     )
   }
@@ -106,4 +140,5 @@ class App extends Component {
     this.calcBoundsSize()
   }
 }
+
 ```
