@@ -35,6 +35,7 @@ class Board extends Component {
   }
 
   componentDidMount() {
+    const { width, height } = this.props
     const { drawerColor, drawerWidth } = this.state
     this.fabricCanvas = new fabric.Canvas('fabric-whiteboard-canvas', {
       isDrawingMode: false,
@@ -54,7 +55,7 @@ class Board extends Component {
       this.handleCanvasSelectionCreated
     )
 
-    window.zoom = window.zoom ? window.zoom : 1
+    window.fabricCanvas.zoom = window.zoom ? window.zoom : 1
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -93,10 +94,22 @@ class Board extends Component {
           break
       }
     }
+
+    if (nextProps.width !== this.props.width) {
+      if (window.fabricCanvas) {
+        //window.fabricCanvas.setWidth(nextProps.width)
+      }
+    }
+
+    if (nextProps.height !== this.props.height) {
+      if (window.fabricCanvas) {
+        //window.fabricCanvas.setHeight(nextProps.height)
+      }
+    }
   }
 
   render() {
-    const { visible, size } = this.props
+    const { visible, width, height } = this.props
 
     if (visible === false) return <div></div>
 
@@ -105,8 +118,8 @@ class Board extends Component {
         <canvas
           id="fabric-whiteboard-canvas"
           className="fabric-whiteboard-canvas"
-          width={size.width}
-          height={size.height}
+          width={width}
+          height={height}
         />
       </div>
     )
@@ -280,12 +293,8 @@ class Board extends Component {
 Board.propTypes = {
   visible: PropTypes.bool,
   mode: PropTypes.oneOf(modes),
-  size: PropTypes.objectOf(
-    PropTypes.shape({
-      width: PropTypes.string,
-      height: PropTypes.string,
-    })
-  ),
+  width: PropTypes.string,
+  height: PropTypes.string,
 }
 
 export default Board

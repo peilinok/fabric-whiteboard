@@ -12,10 +12,11 @@ This is a whiteboard react component base on fabricjs.
 
 ### Features
 
-- Draw ink with pressure (when using a pen with pen pressure).
 - Freely drag the palette.
 - Arrow,Square,Ellipse,Line,Select,Erase,RayPen modes support.
 - Text input mode support
+- Get|Set all objects in json
+-
 
 <br/>
 
@@ -23,7 +24,6 @@ This is a whiteboard react component base on fabricjs.
 
 - Adjust the size of brush.
 - Select colors by simply clicks.
-- Get|Set all objects in json
 
 <br/>
 

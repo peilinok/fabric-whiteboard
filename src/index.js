@@ -14,34 +14,29 @@ const WhiteBoard = (props) => {
   const {
     visible,
     className,
-    style,
-    size,
+    width,
+    height,
     showToolbar,
     showBoard,
     mode,
     onModeClick,
   } = props
 
-  if (visible === true)
+  if (visible === true) {
     return (
-      <div className={classNames('fabric-whiteboard', className)} style={style}>
-        <Board visible={showBoard} mode={mode} size={size} />
+      <div className={classNames('fabric-whiteboard', className)}>
+        <Board visible={showBoard} mode={mode} width={width} height={height} />
         <ToolBar visible={showToolbar} mode={mode} onModeClick={onModeClick} />
       </div>
     )
-  else return <React.Component />
+  } else return <React.Component />
 }
 
 WhiteBoard.propTypes = {
   visible: PropTypes.bool,
   className: PropTypes.string,
-  style: PropTypes.object,
-  size: PropTypes.objectOf(
-    PropTypes.shape({
-      width: PropTypes.string,
-      height: PropTypes.string,
-    })
-  ),
+  width: PropTypes.string,
+  height: PropTypes.string,
   showToolbar: PropTypes.bool,
   showBoard: PropTypes.bool,
   mode: PropTypes.oneOf(modes),
@@ -53,11 +48,8 @@ WhiteBoard.propTypes = {
 WhiteBoard.defaultProps = {
   visible: true,
   className: '',
-  style: {},
-  size: {
-    width: '400px',
-    height: '380px',
-  },
+  width: '400px',
+  height: '380px',
   showToolbar: true,
   showBoard: true,
   mode: modes[0],
