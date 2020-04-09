@@ -19,14 +19,36 @@ const WhiteBoard = (props) => {
     showToolbar,
     showBoard,
     mode,
+    fontSize,
+    brushColor,
+    brushColors,
+    brushThickness,
     onModeClick,
+    onBrushColorChange,
+    onBrushThicknessChange,
   } = props
 
   if (visible === true) {
     return (
       <div className={classNames('fabric-whiteboard', className)}>
-        <Board visible={showBoard} mode={mode} width={width} height={height} />
-        <ToolBar visible={showToolbar} mode={mode} onModeClick={onModeClick} />
+        <Board
+          visible={showBoard}
+          mode={mode}
+          width={width}
+          height={height}
+          brushColor={brushColor}
+        />
+        <ToolBar
+          visible={showToolbar}
+          mode={mode}
+          fontSize={fontSize}
+          brushColor={brushColor}
+          brushColors={brushColors}
+          brushThickness={brushThickness}
+          onModeClick={onModeClick}
+          onBrushColorChange={onBrushColorChange}
+          onBrushThicknessChange={onBrushThicknessChange}
+        />
       </div>
     )
   } else return <React.Component />
@@ -41,8 +63,12 @@ WhiteBoard.propTypes = {
   showBoard: PropTypes.bool,
   mode: PropTypes.oneOf(modes),
   fontSize: PropTypes.number,
+  brushColor: PropTypes.string,
+  brushColors: PropTypes.arrayOf(PropTypes.string),
   brushThickness: PropTypes.number,
   onModeClick: PropTypes.func,
+  onBrushColorChange: PropTypes.func,
+  onBrushThicknessChange: PropTypes.func,
 }
 
 WhiteBoard.defaultProps = {
@@ -54,8 +80,19 @@ WhiteBoard.defaultProps = {
   showBoard: true,
   mode: modes[0],
   fontSize: 22,
+  brushColor: '#f44336',
+  brushColors: [
+    '#f44336',
+    '#e91e63',
+    '#9c27b0',
+    '#673ab7',
+    '#3f51b5',
+    '#2196f3',
+  ],
   brushThickness: 24,
   onModeClick: () => {},
+  onBrushColorChange: () => {},
+  onBrushThicknessChange: () => {},
 }
 
 const getWhiteBoardData = () => {

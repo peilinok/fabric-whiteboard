@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import classNames from 'class-names'
 import PropTypes from 'prop-types'
 
+import ColorPicker from './colorpicker'
+
 import modes from '../utils/mode'
 
 import './style.scss'
@@ -12,6 +14,9 @@ class Toolbar extends Component {
 
     this.state = {
       toolButtons: [],
+      showColorPicker: false,
+      showFontSize: false,
+      showThickness: false,
     }
 
     this.generateToolButtons = this.generateToolButtons.bind(this)
@@ -24,8 +29,23 @@ class Toolbar extends Component {
   }
 
   render() {
-    const { toolButtons } = this.state
-    const { visible, mode, onModeClick } = this.props
+    const {
+      toolButtons,
+      showColorPicker,
+      showFontSize,
+      showThickness,
+    } = this.state
+    const {
+      visible,
+      mode,
+      fontSize,
+      brushColor,
+      brushColors,
+      brushThickness,
+      onModeClick,
+      onBrushColorChange,
+      onBrushThicknessChange,
+    } = this.props
 
     if (visible === false) return <div></div>
 
@@ -53,6 +73,25 @@ class Toolbar extends Component {
               />
             </li>
           ))}
+
+          <li
+            className="toolbar-ul-li"
+            title="brush"
+            onClick={() => {
+              this.setState({
+                showColorPicker: !showColorPicker,
+              })
+            }}
+          >
+            <i className="toolbar-ul-brush" />
+          </li>
+
+          <ColorPicker
+            visible={showColorPicker}
+            color={brushColor}
+            colors={brushColors}
+            onChange={onBrushColorChange}
+          />
         </ul>
       </div>
     )
@@ -74,13 +113,13 @@ class Toolbar extends Component {
 Toolbar.propTypes = {
   visible: PropTypes.bool,
   mode: PropTypes.oneOf(modes),
+  fontSize: PropTypes.number,
+  brushColor: PropTypes.string,
+  brushColors: PropTypes.arrayOf(PropTypes.string),
+  brushThickness: PropTypes.number,
   onModeClick: PropTypes.func,
-}
-
-Toolbar.defaultProps = {
-  visible: true,
-  mode: '',
-  onModeClick: () => {},
+  onBrushColorChange: PropTypes.func,
+  onBrushThicknessChange: PropTypes.func,
 }
 
 export default Toolbar

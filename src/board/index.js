@@ -12,7 +12,6 @@ class Board extends Component {
     super(props)
 
     this.state = {
-      drawerColor: '#E34F51',
       drawerWidth: 2,
       drawerFontSize: 24,
       isDrawing: false,
@@ -35,8 +34,8 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    const { width, height } = this.props
-    const { drawerColor, drawerWidth } = this.state
+    const { width, height, brushColor } = this.props
+    const { drawerWidth } = this.state
     this.fabricCanvas = new fabric.Canvas('fabric-whiteboard-canvas', {
       isDrawingMode: false,
       skipTargetFind: true,
@@ -45,7 +44,7 @@ class Board extends Component {
     })
 
     window.fabricCanvas = this.fabricCanvas
-    window.fabricCanvas.freeDrawingBrush.color = drawerColor
+    window.fabricCanvas.freeDrawingBrush.color = brushColor
     window.fabricCanvas.freeDrawingBrush.width = drawerWidth
     window.fabricCanvas.on('mouse:down', this.handleCanvasMouseDown)
     window.fabricCanvas.on('mouse:up', this.handleCanvasMouseUp)
@@ -104,6 +103,12 @@ class Board extends Component {
     if (nextProps.height !== this.props.height) {
       if (window.fabricCanvas) {
         //window.fabricCanvas.setHeight(nextProps.height)
+      }
+    }
+
+    if (nextProps.brushColor !== this.props.brushColor) {
+      if (window.fabricCanvas) {
+        window.fabricCanvas.freeDrawingBrush.color = nextProps.brushColor
       }
     }
   }
@@ -192,7 +197,6 @@ class Board extends Component {
 
   handleCanvasDrawing() {
     const {
-      drawerColor,
       drawerWidth,
       drawerFontSize,
       preDrawerObj,
@@ -202,7 +206,7 @@ class Board extends Component {
       posFrom,
       posTo,
     } = this.state
-    const { mode } = this.props
+    const { mode, brushColor } = this.props
     if (isDrawing === false || !moveCount % 2) return
 
     let drawerObj = undefined
@@ -219,18 +223,13 @@ class Board extends Component {
       () => {
         switch (mode) {
           case 'line':
-            drawerObj = drawer.drawLine(
-              posFrom,
-              posTo,
-              drawerColor,
-              drawerWidth
-            )
+            drawerObj = drawer.drawLine(posFrom, posTo, brushColor, drawerWidth)
             break
           case 'dotline':
             drawerObj = drawer.drawDotLine(
               posFrom,
               posTo,
-              drawerColor,
+              brushColor,
               drawerWidth
             )
             break
@@ -238,13 +237,13 @@ class Board extends Component {
             drawerObj = drawer.drawArrow(
               posFrom,
               posTo,
-              drawerColor,
+              brushColor,
               'rgba(255,255,255,0)',
               drawerWidth
             )
             break
           case 'text':
-            textObj = drawer.drawText(posFrom, drawerFontSize, drawerColor)
+            textObj = drawer.drawText(posFrom, drawerFontSize, brushColor)
             window.fabricCanvas.add(textObj)
             textObj.enterEditing()
             textObj.hiddenTextarea.focus()
@@ -253,7 +252,7 @@ class Board extends Component {
             drawerObj = drawer.drawRectangle(
               posFrom,
               posTo,
-              drawerColor,
+              brushColor,
               drawerWidth
             )
             break
@@ -261,7 +260,7 @@ class Board extends Component {
             drawerObj = drawer.drawTriangle(
               posFrom,
               posTo,
-              drawerColor,
+              brushColor,
               drawerWidth,
               true
             )
@@ -270,7 +269,7 @@ class Board extends Component {
             drawerObj = drawer.drawCircle(
               posFrom,
               posTo,
-              drawerColor,
+              brushColor,
               drawerWidth
             )
             break
@@ -278,7 +277,7 @@ class Board extends Component {
             drawerObj = drawer.drawEllipse(
               posFrom,
               posTo,
-              drawerColor,
+              brushColor,
               drawerWidth
             )
             break
@@ -300,10 +299,11 @@ class Board extends Component {
 }
 
 Board.propTypes = {
-  visible: PropTypes.bool,
-  mode: PropTypes.oneOf(modes),
+  visible: PropTypes.bool.isRequired,
+  mode: PropTypes.oneOf(modes).isRequired,
   width: PropTypes.string,
   height: PropTypes.string,
+  brushColor: PropTypes.string.isRequired,
 }
 
 export default Board
