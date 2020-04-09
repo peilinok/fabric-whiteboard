@@ -2,9 +2,13 @@
 
 This is a whiteboard react component base on fabricjs.
 
+<br/>
+
 ### ScreenShots
 
 ![](screenshots/1.png)
+
+<br/>
 
 ### Features
 
@@ -13,15 +17,17 @@ This is a whiteboard react component base on fabricjs.
 - Arrow,Square,Ellipse,Line,Select,Erase,RayPen modes support.
 - Text input mode support
 
+<br/>
+
 ### Todo
 
 - Adjust the size of brush.
 - Select colors by simply clicks.
 - Get|Set all objects in json
 
-### Usage
+<br/>
 
-#### Instal
+### Instal
 
 ```sh
 $ npm install fabric-whiteboard
@@ -31,9 +37,11 @@ $ npm install fabric-whiteboard
 $ yarn add fabric-whiteboard
 ```
 
-#### Demo
+<br/>
 
-```
+### Usage
+
+```js
 class App extends Component {
   constructor(props) {
     super(props)
