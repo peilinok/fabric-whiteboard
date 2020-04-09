@@ -13,17 +13,19 @@ This is a whiteboard react component base on fabricjs.
 ### Features
 
 - Freely drag the palette.
-- Arrow,Square,Ellipse,Line,Select,Erase,RayPen modes support.
+- Arrow,Square,Ellipse,Line,DotLine,Select,Erase,RayPen modes support.
 - Text input mode support
 - Get|Set all objects in json
--
+- Pick color of brush
 
 <br/>
 
 ### Todo
 
 - Adjust the size of brush.
-- Select colors by simply clicks.
+- Event of single object like new、move、scale、delete
+- Operations of single object like new、move、scale、delete
+- Animations
 
 <br/>
 
@@ -41,26 +43,59 @@ $ yarn add fabric-whiteboard
 
 ### Usage
 
+```scss
+.App {
+  text-align: center;
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.toolbar {
+  margin: 12px 0px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.toolbar-button {
+  margin: 0px 12px;
+}
+```
+
 ```js
-class class App extends Component {
+import React, { Component } from 'react'
+import './App.css'
+
+import WhiteBoard, {
+  getWhiteBoardData,
+  loadWhiteBoardData,
+} from 'fabric-whiteboard'
+
+export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
       mode: 'select',
-      size: {
-        width: '800px',
-        height: '800px',
-      },
+      width: '600px',
+      height: '600px',
+      brushColor: '#f44336',
     }
 
     this.calcBoundsSize = this.calcBoundsSize.bind(this)
+    this.handleBoundsSizeChange = this.handleBoundsSizeChange.bind(this)
 
     this.handleOnModeClick = this.handleOnModeClick.bind(this)
-    this.handleBoundsSizeChange = this.handleBoundsSizeChange.bind(this)
+    this.handleOnBrushColorChange = this.handleOnBrushColorChange.bind(this)
   }
 
   componentDidMount() {
-    //this.calcBoundsSize()
+    this.calcBoundsSize()
 
     window.addEventListener('resize', this.handleBoundsSizeChange)
   }
@@ -70,17 +105,32 @@ class class App extends Component {
   }
 
   render() {
-    const { mode, size } = this.state
+    const { mode, width, height, brushColor } = this.state
+
     return (
       <div className="App" id="App">
-        <WhiteBoard
-          size={size}
-          showToolbar={true}
-          showBoard={true}
-          mode={mode}
-          onModeClick={this.handleOnModeClick}
-        />
-        <div className="toolbar">
+        <div className="whiteboard" id="whiteboard">
+          <WhiteBoard
+            width={width}
+            height={height}
+            showToolbar={true}
+            showBoard={true}
+            mode={mode}
+            onModeClick={this.handleOnModeClick}
+            brushColor={brushColor}
+            brushColors={[
+              '#f44336',
+              '#e91e63',
+              '#9c27b0',
+              '#673ab7',
+              '#3f51b5',
+              '#2196f3',
+            ]}
+            onBrushColorChange={this.handleOnBrushColorChange}
+          />
+        </div>
+
+        <div className="toolbar" id="toolbar">
           <button
             className="toolbar-button"
             onClick={() => {
@@ -119,15 +169,25 @@ class class App extends Component {
   }
 
   calcBoundsSize() {
-    const dom = document.getElementById('App')
-    const domStyle = window.getComputedStyle(dom)
+    return
+    const domApp = document.getElementById('App')
+    const domToolbar = document.getElementById('toolbar')
+
+    const domAppStyle = window.getComputedStyle(domApp)
+    const domToolbarStyle = window.getComputedStyle(domToolbar)
 
     this.setState({
-      size: {
-        width: domStyle.width,
-        height: domStyle.height,
-      },
+      width: domAppStyle.width,
+      height: `${
+        parseInt(domAppStyle.height, 10) -
+        parseInt(domToolbarStyle.height, 10) -
+        20
+      }px`,
     })
+  }
+
+  handleBoundsSizeChange() {
+    this.calcBoundsSize()
   }
 
   handleOnModeClick(mode) {
@@ -136,9 +196,11 @@ class class App extends Component {
     })
   }
 
-  handleBoundsSizeChange() {
-    this.calcBoundsSize()
+  handleOnBrushColorChange(color) {
+    console.warn(color)
+    this.setState({
+      brushColor: color.hex,
+    })
   }
 }
-
 ```
