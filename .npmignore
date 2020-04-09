@@ -3,5 +3,10 @@ build/
 lib/
 .git/
 .vscode/
+.editorconfig
+.eslintignore
+.eslintrc.json
+.gitignore
+.prettierrc.json
 yarn.lock
 yarn-error.log
