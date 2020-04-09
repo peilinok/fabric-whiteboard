@@ -23,7 +23,7 @@ class Board extends Component {
       posTo: { x: 0, y: 0 },
     }
 
-    this.canvas = null
+    this.fabricCanvas = null
     this.transpos = this.transpos.bind(this)
     this.handleCanvasMouseDown = this.handleCanvasMouseDown.bind(this)
     this.handleCanvasMouseUp = this.handleCanvasMouseUp.bind(this)
@@ -36,20 +36,23 @@ class Board extends Component {
 
   componentDidMount() {
     const { drawerColor, drawerWidth } = this.state
-    this.canvas = new fabric.Canvas('fabric-whiteboard-canvas', {
+    this.fabricCanvas = new fabric.Canvas('fabric-whiteboard-canvas', {
       isDrawingMode: false,
       skipTargetFind: true,
       selectable: true,
       selection: true,
     })
 
-    window.canvas = this.canvas
-    window.canvas.freeDrawingBrush.color = drawerColor
-    window.canvas.freeDrawingBrush.width = drawerWidth
-    window.canvas.on('mouse:down', this.handleCanvasMouseDown)
-    window.canvas.on('mouse:up', this.handleCanvasMouseUp)
-    window.canvas.on('mouse:move', this.handleCanvasMouseMove)
-    window.canvas.on('selection:created', this.handleCanvasSelectionCreated)
+    window.fabricCanvas = this.fabricCanvas
+    window.fabricCanvas.freeDrawingBrush.color = drawerColor
+    window.fabricCanvas.freeDrawingBrush.width = drawerWidth
+    window.fabricCanvas.on('mouse:down', this.handleCanvasMouseDown)
+    window.fabricCanvas.on('mouse:up', this.handleCanvasMouseUp)
+    window.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
+    window.fabricCanvas.on(
+      'selection:created',
+      this.handleCanvasSelectionCreated
+    )
 
     window.zoom = window.zoom ? window.zoom : 1
   }
@@ -61,32 +64,32 @@ class Board extends Component {
     //selection show selection bounds
     if (nextProps.mode !== this.props.mode) {
       const { preDrawerObj, preTextObj } = this.state
-      if (preDrawerObj !== undefined) window.canvas.remove(preDrawerObj)
+      if (preDrawerObj !== undefined) window.fabricCanvas.remove(preDrawerObj)
       if (preTextObj !== undefined) preTextObj.exitEditing()
       switch (nextProps.mode) {
         case 'select':
-          window.canvas.isDrawingMode = false
-          window.canvas.skipTargetFind = false
-          window.canvas.selectable = true
-          window.canvas.selection = true
+          window.fabricCanvas.isDrawingMode = false
+          window.fabricCanvas.skipTargetFind = false
+          window.fabricCanvas.selectable = true
+          window.fabricCanvas.selection = true
           break
         case 'pen':
-          window.canvas.isDrawingMode = true
-          window.canvas.skipTargetFind = true
-          window.canvas.selectable = false
-          window.canvas.selection = false
+          window.fabricCanvas.isDrawingMode = true
+          window.fabricCanvas.skipTargetFind = true
+          window.fabricCanvas.selectable = false
+          window.fabricCanvas.selection = false
           break
         case 'eraser':
-          window.canvas.isDrawingMode = false
-          window.canvas.skipTargetFind = false
-          window.canvas.selectable = true
-          window.canvas.selection = true
+          window.fabricCanvas.isDrawingMode = false
+          window.fabricCanvas.skipTargetFind = false
+          window.fabricCanvas.selectable = true
+          window.fabricCanvas.selection = true
           break
         default:
-          window.canvas.isDrawingMode = false
-          window.canvas.skipTargetFind = true
-          window.canvas.selectable = false
-          window.canvas.selection = false
+          window.fabricCanvas.isDrawingMode = false
+          window.fabricCanvas.skipTargetFind = true
+          window.fabricCanvas.selectable = false
+          window.fabricCanvas.selection = false
           break
       }
     }
@@ -164,13 +167,13 @@ class Board extends Component {
     if (e.target._objects) {
       var etCount = e.target._objects.length
       for (var etindex = 0; etindex < etCount; etindex++) {
-        window.canvas.remove(e.target._objects[etindex])
+        window.fabricCanvas.remove(e.target._objects[etindex])
       }
     } else {
-      window.canvas.remove(e.target)
+      window.fabricCanvas.remove(e.target)
     }
 
-    window.canvas.discardActiveObject()
+    window.fabricCanvas.discardActiveObject()
   }
 
   handleCanvasDrawing() {
@@ -191,7 +194,7 @@ class Board extends Component {
     let drawerObj = undefined
     let textObj = undefined
 
-    if (preDrawerObj !== undefined) window.canvas.remove(preDrawerObj)
+    if (preDrawerObj !== undefined) window.fabricCanvas.remove(preDrawerObj)
     if (preTextObj !== undefined) preTextObj.exitEditing()
 
     this.setState(
@@ -220,7 +223,7 @@ class Board extends Component {
             break
           case 'text':
             textObj = drawer.drawText(posFrom, drawerFontSize, drawerColor)
-            window.canvas.add(textObj)
+            window.fabricCanvas.add(textObj)
             textObj.enterEditing()
             textObj.hiddenTextarea.focus()
             break
@@ -262,7 +265,7 @@ class Board extends Component {
         }
 
         if (drawerObj !== undefined) {
-          window.canvas.add(drawerObj)
+          window.fabricCanvas.add(drawerObj)
         }
 
         this.setState({

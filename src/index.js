@@ -66,4 +66,18 @@ WhiteBoard.defaultProps = {
   onModeClick: () => {},
 }
 
-module.exports = WhiteBoard
+const getWhiteBoardData = () => {
+  if (window.fabricCanvas !== null && window.fabricCanvas !== undefined) {
+    return window.fabricCanvas.toJSON()
+  }
+
+  return ''
+}
+
+const loadWhiteBoardData = (data, cb) => {
+  if (window.fabricCanvas !== null && window.fabricCanvas !== undefined) {
+    window.fabricCanvas.loadFromJSON(data, cb)
+  }
+}
+
+export { WhiteBoard as default, getWhiteBoardData, loadWhiteBoardData }
