@@ -3,6 +3,7 @@ import classNames from 'class-names'
 import PropTypes from 'prop-types'
 
 import ColorPicker from './colorpicker'
+import Thickness from './thickness'
 
 import modes from '../utils/mode'
 
@@ -16,7 +17,6 @@ class Toolbar extends Component {
       toolButtons: [],
       showColorPicker: false,
       showFontSize: false,
-      showThickness: false,
     }
 
     this.generateToolButtons = this.generateToolButtons.bind(this)
@@ -29,12 +29,7 @@ class Toolbar extends Component {
   }
 
   render() {
-    const {
-      toolButtons,
-      showColorPicker,
-      showFontSize,
-      showThickness,
-    } = this.state
+    const { toolButtons, showColorPicker, showFontSize } = this.state
     const {
       visible,
       mode,
@@ -42,6 +37,7 @@ class Toolbar extends Component {
       brushColor,
       brushColors,
       brushThickness,
+      brushThicknessRange,
       onModeClick,
       onBrushColorChange,
       onBrushThicknessChange,
@@ -55,6 +51,16 @@ class Toolbar extends Component {
           id="fabric-whiteboard-toolbar-ul"
           className="fabric-whiteboard-toolbar-ul"
         >
+          <li className="toolbar-ul-li" title="thickness">
+            <Thickness
+              visible={true}
+              color={brushColor}
+              value={brushThickness}
+              range={brushThicknessRange}
+              onChange={onBrushThicknessChange}
+            />
+          </li>
+
           {toolButtons.map((btn) => (
             <li
               className={classNames(
@@ -117,6 +123,7 @@ Toolbar.propTypes = {
   brushColor: PropTypes.string,
   brushColors: PropTypes.arrayOf(PropTypes.string),
   brushThickness: PropTypes.number,
+  brushThicknessRange: PropTypes.arrayOf(PropTypes.number),
   onModeClick: PropTypes.func,
   onBrushColorChange: PropTypes.func,
   onBrushThicknessChange: PropTypes.func,

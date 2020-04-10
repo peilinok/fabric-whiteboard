@@ -23,6 +23,7 @@ const WhiteBoard = (props) => {
     brushColor,
     brushColors,
     brushThickness,
+    brushThicknessRange,
     onModeClick,
     onBrushColorChange,
     onBrushThicknessChange,
@@ -37,6 +38,7 @@ const WhiteBoard = (props) => {
           width={width}
           height={height}
           brushColor={brushColor}
+          brushThickness={brushThickness}
         />
         <ToolBar
           visible={showToolbar}
@@ -45,6 +47,7 @@ const WhiteBoard = (props) => {
           brushColor={brushColor}
           brushColors={brushColors}
           brushThickness={brushThickness}
+          brushThicknessRange={brushThicknessRange}
           onModeClick={onModeClick}
           onBrushColorChange={onBrushColorChange}
           onBrushThicknessChange={onBrushThicknessChange}
@@ -66,6 +69,7 @@ WhiteBoard.propTypes = {
   brushColor: PropTypes.string,
   brushColors: PropTypes.arrayOf(PropTypes.string),
   brushThickness: PropTypes.number,
+  brushThicknessRange: PropTypes.arrayOf(PropTypes.number),
   onModeClick: PropTypes.func,
   onBrushColorChange: PropTypes.func,
   onBrushThicknessChange: PropTypes.func,
@@ -89,7 +93,8 @@ WhiteBoard.defaultProps = {
     '#3f51b5',
     '#2196f3',
   ],
-  brushThickness: 24,
+  brushThickness: 2,
+  brushThicknessRange: [2, 3, 4, 5, 6, 7, 8],
   onModeClick: () => {},
   onBrushColorChange: () => {},
   onBrushThicknessChange: () => {},

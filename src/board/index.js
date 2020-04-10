@@ -12,7 +12,6 @@ class Board extends Component {
     super(props)
 
     this.state = {
-      drawerWidth: 2,
       drawerFontSize: 24,
       isDrawing: false,
       moveCount: 1,
@@ -34,8 +33,7 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    const { width, height, brushColor } = this.props
-    const { drawerWidth } = this.state
+    const { width, height, brushColor, brushThickness } = this.props
     this.fabricCanvas = new fabric.Canvas('fabric-whiteboard-canvas', {
       isDrawingMode: false,
       skipTargetFind: true,
@@ -45,7 +43,7 @@ class Board extends Component {
 
     window.fabricCanvas = this.fabricCanvas
     window.fabricCanvas.freeDrawingBrush.color = brushColor
-    window.fabricCanvas.freeDrawingBrush.width = drawerWidth
+    window.fabricCanvas.freeDrawingBrush.width = brushThickness
     window.fabricCanvas.on('mouse:down', this.handleCanvasMouseDown)
     window.fabricCanvas.on('mouse:up', this.handleCanvasMouseUp)
     window.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
@@ -109,6 +107,12 @@ class Board extends Component {
     if (nextProps.brushColor !== this.props.brushColor) {
       if (window.fabricCanvas) {
         window.fabricCanvas.freeDrawingBrush.color = nextProps.brushColor
+      }
+    }
+
+    if (nextProps.brushThickness !== this.props.brushThickness) {
+      if (window.fabricCanvas) {
+        window.fabricCanvas.freeDrawingBrush.width = nextProps.brushThickness
       }
     }
   }
@@ -197,7 +201,6 @@ class Board extends Component {
 
   handleCanvasDrawing() {
     const {
-      drawerWidth,
       drawerFontSize,
       preDrawerObj,
       preTextObj,
@@ -206,7 +209,7 @@ class Board extends Component {
       posFrom,
       posTo,
     } = this.state
-    const { mode, brushColor } = this.props
+    const { mode, brushColor, brushThickness } = this.props
     if (isDrawing === false || !moveCount % 2) return
 
     let drawerObj = undefined
@@ -223,14 +226,19 @@ class Board extends Component {
       () => {
         switch (mode) {
           case 'line':
-            drawerObj = drawer.drawLine(posFrom, posTo, brushColor, drawerWidth)
+            drawerObj = drawer.drawLine(
+              posFrom,
+              posTo,
+              brushColor,
+              brushThickness
+            )
             break
           case 'dotline':
             drawerObj = drawer.drawDotLine(
               posFrom,
               posTo,
               brushColor,
-              drawerWidth
+              brushThickness
             )
             break
           case 'arrow':
@@ -239,7 +247,7 @@ class Board extends Component {
               posTo,
               brushColor,
               'rgba(255,255,255,0)',
-              drawerWidth
+              brushThickness
             )
             break
           case 'text':
@@ -253,7 +261,7 @@ class Board extends Component {
               posFrom,
               posTo,
               brushColor,
-              drawerWidth
+              brushThickness
             )
             break
           case 'triangle':
@@ -261,7 +269,7 @@ class Board extends Component {
               posFrom,
               posTo,
               brushColor,
-              drawerWidth,
+              brushThickness,
               true
             )
             break
@@ -270,7 +278,7 @@ class Board extends Component {
               posFrom,
               posTo,
               brushColor,
-              drawerWidth
+              brushThickness
             )
             break
           case 'ellipse':
@@ -278,7 +286,7 @@ class Board extends Component {
               posFrom,
               posTo,
               brushColor,
-              drawerWidth
+              brushThickness
             )
             break
           default:
@@ -304,6 +312,7 @@ Board.propTypes = {
   width: PropTypes.string,
   height: PropTypes.string,
   brushColor: PropTypes.string.isRequired,
+  brushThickness: PropTypes.number.isRequired,
 }
 
 export default Board
