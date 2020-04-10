@@ -8,6 +8,8 @@ import modes from './utils/mode'
 import Board from './board'
 import ToolBar from './toolbar'
 
+import { fabric } from 'fabric'
+
 import './style.scss'
 
 const WhiteBoard = (props) => {
@@ -27,6 +29,7 @@ const WhiteBoard = (props) => {
     onModeClick,
     onBrushColorChange,
     onBrushThicknessChange,
+    onObjectAdded,
   } = props
 
   if (visible === true) {
@@ -39,6 +42,7 @@ const WhiteBoard = (props) => {
           height={height}
           brushColor={brushColor}
           brushThickness={brushThickness}
+          onObjectAdded={onObjectAdded}
         />
         <ToolBar
           visible={showToolbar}
@@ -73,6 +77,7 @@ WhiteBoard.propTypes = {
   onModeClick: PropTypes.func,
   onBrushColorChange: PropTypes.func,
   onBrushThicknessChange: PropTypes.func,
+  onObjectAdded: PropTypes.func,
 }
 
 WhiteBoard.defaultProps = {
@@ -98,6 +103,7 @@ WhiteBoard.defaultProps = {
   onModeClick: () => {},
   onBrushColorChange: () => {},
   onBrushThicknessChange: () => {},
+  onObjectAdded: (json) => {},
 }
 
 const getWhiteBoardData = () => {
@@ -114,4 +120,31 @@ const loadWhiteBoardData = (data, cb) => {
   }
 }
 
-export { WhiteBoard as default, getWhiteBoardData, loadWhiteBoardData }
+const addWhiteBoardObject = (json) => {
+  if (window.fabricCanvas === null || window.fabricCanvas === undefined) return
+
+  try {
+    const { mode, obj } = JSON.parse(json)
+
+    fabric.util.enlivenObjects([obj], (objects) => {
+      var origRenderOnAddRemove = window.fabricCanvas.renderOnAddRemove
+      window.fabricCanvas.renderOnAddRemove = false
+
+      objects.forEach(function (o) {
+        window.fabricCanvas.add(o)
+      })
+
+      window.fabricCanvas.renderOnAddRemove = origRenderOnAddRemove
+      window.fabricCanvas.renderAll()
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export {
+  WhiteBoard as default,
+  getWhiteBoardData,
+  loadWhiteBoardData,
+  addWhiteBoardObject,
+}

@@ -1,4 +1,3 @@
-import drawPen from './pen'
 import drawLine from './line'
 import drawDotLine from './dotline'
 import drawArrow from './arrow'
@@ -9,7 +8,6 @@ import drawCircle from './circle'
 import drawEllipse from './ellipse'
 
 export {
-  drawPen,
   drawLine,
   drawDotLine,
   drawArrow,

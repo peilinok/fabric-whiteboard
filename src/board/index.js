@@ -26,9 +26,13 @@ class Board extends Component {
     this.handleCanvasMouseDown = this.handleCanvasMouseDown.bind(this)
     this.handleCanvasMouseUp = this.handleCanvasMouseUp.bind(this)
     this.handleCanvasMouseMove = this.handleCanvasMouseMove.bind(this)
+    this.handleCanvasPathCreated = this.handleCanvasPathCreated.bind(this)
     this.handleCanvasSelectionCreated = this.handleCanvasSelectionCreated.bind(
       this
     )
+    this.handleCanvasObjectMoved = this.handleCanvasObjectMoved.bind(this)
+    this.handleCanvasObjectScaled = this.handleCanvasObjectScaled.bind(this)
+
     this.handleCanvasDrawing = this.handleCanvasDrawing.bind(this)
   }
 
@@ -47,10 +51,13 @@ class Board extends Component {
     window.fabricCanvas.on('mouse:down', this.handleCanvasMouseDown)
     window.fabricCanvas.on('mouse:up', this.handleCanvasMouseUp)
     window.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
+    window.fabricCanvas.on('path:created', this.handleCanvasPathCreated)
     window.fabricCanvas.on(
       'selection:created',
       this.handleCanvasSelectionCreated
     )
+    window.fabricCanvas.on('object:moved', this.handleCanvasObjectMoved)
+    window.fabricCanvas.on('object:scaled', this.handleCanvasObjectScaled)
 
     window.fabricCanvas.zoom = window.zoom ? window.zoom : 1
   }
@@ -61,9 +68,11 @@ class Board extends Component {
     //selectable can select
     //selection show selection bounds
     if (nextProps.mode !== this.props.mode) {
-      const { preDrawerObj, preTextObj } = this.state
-      if (preDrawerObj !== undefined) window.fabricCanvas.remove(preDrawerObj)
-      if (preTextObj !== undefined) preTextObj.exitEditing()
+      const { preTextObj } = this.state
+      if (preTextObj !== undefined) {
+        preTextObj.exitEditing()
+        this.setState({ preTextObj: undefined })
+      }
       switch (nextProps.mode) {
         case 'select':
           window.fabricCanvas.isDrawingMode = false
@@ -159,6 +168,12 @@ class Board extends Component {
   }
 
   handleCanvasMouseUp(options) {
+    const { mode, onObjectAdded } = this.props
+    const { preDrawerObj } = this.state
+
+    if (mode !== 'text' && preDrawerObj !== undefined)
+      onObjectAdded({ mode: mode, obj: preDrawerObj.toJSON() })
+
     this.setState({
       isDrawing: false,
       moveCount: 1,
@@ -183,6 +198,12 @@ class Board extends Component {
     )
   }
 
+  handleCanvasPathCreated(e) {
+    const { onObjectAdded } = this.props
+
+    onObjectAdded({ mode: 'pen', obj: e.path.toJSON() })
+  }
+
   handleCanvasSelectionCreated(e) {
     const { mode } = this.props
     if (mode !== 'eraser') return
@@ -199,6 +220,10 @@ class Board extends Component {
     window.fabricCanvas.discardActiveObject()
   }
 
+  handleCanvasObjectMoved(e) {}
+
+  handleCanvasObjectScaled(e) {}
+
   handleCanvasDrawing() {
     const {
       drawerFontSize,
@@ -209,7 +234,7 @@ class Board extends Component {
       posFrom,
       posTo,
     } = this.state
-    const { mode, brushColor, brushThickness } = this.props
+    const { mode, brushColor, brushThickness, onObjectAdded } = this.props
     if (isDrawing === false || !moveCount % 2) return
 
     let drawerObj = undefined
@@ -252,6 +277,11 @@ class Board extends Component {
             break
           case 'text':
             textObj = drawer.drawText(posFrom, drawerFontSize, brushColor)
+            textObj.on('editing:exited', (e) => {
+              if (textObj.text !== '')
+                onObjectAdded({ mode: 'text', obj: textObj.toJSON() })
+              else window.fabricCanvas.remove(textObj) //auto remove empty itext
+            })
             window.fabricCanvas.add(textObj)
             textObj.enterEditing()
             textObj.hiddenTextarea.focus()
@@ -313,6 +343,7 @@ Board.propTypes = {
   height: PropTypes.string,
   brushColor: PropTypes.string.isRequired,
   brushThickness: PropTypes.number.isRequired,
+  onObjectAdded: PropTypes.func,
 }
 
 export default Board
