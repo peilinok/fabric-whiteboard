@@ -4,6 +4,7 @@ import { fabric } from 'fabric'
 
 import * as drawer from './drawer'
 import modes from '../utils/mode'
+import uuid from 'node-uuid'
 
 import './style.scss'
 
@@ -36,10 +37,20 @@ class Board extends Component {
     this.handleCanvasDrawing = this.handleCanvasDrawing.bind(this)
   }
 
+  UNSAFE_componentWillMount() {
+    const id = 'fabric-whiteboard-canvas-' + uuid.v4()
+    this.setState({
+      canvasId: id,
+    })
+
+    console.warn(('id', id))
+  }
+
   componentDidMount() {
+    const { canvasId } = this.state
     const { width, height, brushColor, brushThickness } = this.props
     //create fabric canvas with select mode
-    this.fabricCanvas = new fabric.Canvas('fabric-whiteboard-canvas', {
+    this.fabricCanvas = new fabric.Canvas(canvasId, {
       isDrawingMode: false,
       skipTargetFind: false,
       selectable: true,
@@ -128,6 +139,7 @@ class Board extends Component {
   }
 
   render() {
+    const { canvasId } = this.state
     const { visible, width, height } = this.props
 
     if (visible === false) return <div></div>
@@ -135,7 +147,7 @@ class Board extends Component {
     return (
       <div className="fabric-whiteboard-board">
         <canvas
-          id="fabric-whiteboard-canvas"
+          id={canvasId}
           className="fabric-whiteboard-canvas"
           width={width}
           height={height}

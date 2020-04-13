@@ -21,6 +21,7 @@
     "fabric": "^3.6.3",
     "file-loader": "^6.0.0",
     "node-sass": "^4.13.1",
+    "node-uuid": "^1.4.8",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-color": "^2.18.0",
