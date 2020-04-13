@@ -6,9 +6,9 @@ export default function (from, fontSize, color) {
     top: from.y,
     width: 150,
     fontSize: fontSize,
-    borderColor: '#2c2c2c',
+    borderColor: '#000000',
     fill: color,
     hasControls: true,
-    editingBorderColor: true,
+    editingBorderColor: '#000000',
   })
 }

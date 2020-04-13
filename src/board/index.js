@@ -38,28 +38,29 @@ class Board extends Component {
 
   componentDidMount() {
     const { width, height, brushColor, brushThickness } = this.props
+    //create fabric canvas with select mode
     this.fabricCanvas = new fabric.Canvas('fabric-whiteboard-canvas', {
       isDrawingMode: false,
-      skipTargetFind: true,
+      skipTargetFind: false,
       selectable: true,
       selection: true,
     })
 
-    window.fabricCanvas = this.fabricCanvas
-    window.fabricCanvas.freeDrawingBrush.color = brushColor
-    window.fabricCanvas.freeDrawingBrush.width = brushThickness
-    window.fabricCanvas.on('mouse:down', this.handleCanvasMouseDown)
-    window.fabricCanvas.on('mouse:up', this.handleCanvasMouseUp)
-    window.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
-    window.fabricCanvas.on('path:created', this.handleCanvasPathCreated)
-    window.fabricCanvas.on(
-      'selection:created',
-      this.handleCanvasSelectionCreated
-    )
-    window.fabricCanvas.on('object:moved', this.handleCanvasObjectMoved)
-    window.fabricCanvas.on('object:scaled', this.handleCanvasObjectScaled)
+    this.fabricCanvas.freeDrawingBrush.color = brushColor
+    this.fabricCanvas.freeDrawingBrush.width = brushThickness
+    this.fabricCanvas.on('mouse:down', this.handleCanvasMouseDown)
+    this.fabricCanvas.on('mouse:up', this.handleCanvasMouseUp)
+    this.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
+    this.fabricCanvas.on('path:created', this.handleCanvasPathCreated)
+    this.fabricCanvas.on('selection:created', this.handleCanvasSelectionCreated)
+    this.fabricCanvas.on('object:moved', this.handleCanvasObjectMoved)
+    this.fabricCanvas.on('object:scaled', this.handleCanvasObjectScaled)
 
-    window.fabricCanvas.zoom = window.zoom ? window.zoom : 1
+    this.fabricCanvas.zoom = window.zoom ? window.zoom : 1
+
+    this.refs = {
+      fabricCanvas: this.fabricCanvas,
+    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -75,53 +76,53 @@ class Board extends Component {
       }
       switch (nextProps.mode) {
         case 'select':
-          window.fabricCanvas.isDrawingMode = false
-          window.fabricCanvas.skipTargetFind = false
-          window.fabricCanvas.selectable = true
-          window.fabricCanvas.selection = true
+          this.fabricCanvas.isDrawingMode = false
+          this.fabricCanvas.skipTargetFind = false
+          this.fabricCanvas.selectable = true
+          this.fabricCanvas.selection = true
           break
         case 'pen':
-          window.fabricCanvas.isDrawingMode = true
-          window.fabricCanvas.skipTargetFind = true
-          window.fabricCanvas.selectable = false
-          window.fabricCanvas.selection = false
+          this.fabricCanvas.isDrawingMode = true
+          this.fabricCanvas.skipTargetFind = true
+          this.fabricCanvas.selectable = false
+          this.fabricCanvas.selection = false
           break
         case 'eraser':
-          window.fabricCanvas.isDrawingMode = false
-          window.fabricCanvas.skipTargetFind = false
-          window.fabricCanvas.selectable = true
-          window.fabricCanvas.selection = true
+          this.fabricCanvas.isDrawingMode = false
+          this.fabricCanvas.skipTargetFind = false
+          this.fabricCanvas.selectable = true
+          this.fabricCanvas.selection = true
           break
         default:
-          window.fabricCanvas.isDrawingMode = false
-          window.fabricCanvas.skipTargetFind = true
-          window.fabricCanvas.selectable = false
-          window.fabricCanvas.selection = false
+          this.fabricCanvas.isDrawingMode = false
+          this.fabricCanvas.skipTargetFind = true
+          this.fabricCanvas.selectable = false
+          this.fabricCanvas.selection = false
           break
       }
     }
 
     if (nextProps.width !== this.props.width) {
-      if (window.fabricCanvas) {
-        //window.fabricCanvas.setWidth(nextProps.width)
+      if (this.fabricCanvas) {
+        //this.fabricCanvas.setWidth(nextProps.width)
       }
     }
 
     if (nextProps.height !== this.props.height) {
-      if (window.fabricCanvas) {
-        //window.fabricCanvas.setHeight(nextProps.height)
+      if (this.fabricCanvas) {
+        //this.fabricCanvas.setHeight(nextProps.height)
       }
     }
 
     if (nextProps.brushColor !== this.props.brushColor) {
-      if (window.fabricCanvas) {
-        window.fabricCanvas.freeDrawingBrush.color = nextProps.brushColor
+      if (this.fabricCanvas) {
+        this.fabricCanvas.freeDrawingBrush.color = nextProps.brushColor
       }
     }
 
     if (nextProps.brushThickness !== this.props.brushThickness) {
-      if (window.fabricCanvas) {
-        window.fabricCanvas.freeDrawingBrush.width = nextProps.brushThickness
+      if (this.fabricCanvas) {
+        this.fabricCanvas.freeDrawingBrush.width = nextProps.brushThickness
       }
     }
   }
@@ -211,18 +212,24 @@ class Board extends Component {
     if (e.target._objects) {
       var etCount = e.target._objects.length
       for (var etindex = 0; etindex < etCount; etindex++) {
-        window.fabricCanvas.remove(e.target._objects[etindex])
+        this.fabricCanvas.remove(e.target._objects[etindex])
       }
     } else {
-      window.fabricCanvas.remove(e.target)
+      this.fabricCanvas.remove(e.target)
     }
 
-    window.fabricCanvas.discardActiveObject()
+    this.fabricCanvas.discardActiveObject()
   }
 
-  handleCanvasObjectMoved(e) {}
+  handleCanvasObjectMoved(e) {
+    console.info('moved:', e)
 
-  handleCanvasObjectScaled(e) {}
+    console.warn(this.fabricCanvas.findTarget(e.e, true))
+  }
+
+  handleCanvasObjectScaled(e) {
+    console.info('scaled:', e)
+  }
 
   handleCanvasDrawing() {
     const {
@@ -240,7 +247,7 @@ class Board extends Component {
     let drawerObj = undefined
     let textObj = undefined
 
-    if (preDrawerObj !== undefined) window.fabricCanvas.remove(preDrawerObj)
+    if (preDrawerObj !== undefined) this.fabricCanvas.remove(preDrawerObj)
     if (preTextObj !== undefined) preTextObj.exitEditing()
 
     this.setState(
@@ -280,9 +287,9 @@ class Board extends Component {
             textObj.on('editing:exited', (e) => {
               if (textObj.text !== '')
                 onObjectAdded({ mode: 'text', obj: textObj.toJSON() })
-              else window.fabricCanvas.remove(textObj) //auto remove empty itext
+              else this.fabricCanvas.remove(textObj) //auto remove empty itext
             })
-            window.fabricCanvas.add(textObj)
+            this.fabricCanvas.add(textObj)
             textObj.enterEditing()
             textObj.hiddenTextarea.focus()
             break
@@ -324,7 +331,7 @@ class Board extends Component {
         }
 
         if (drawerObj !== undefined) {
-          window.fabricCanvas.add(drawerObj)
+          this.fabricCanvas.add(drawerObj)
         }
 
         this.setState({
