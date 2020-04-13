@@ -8,6 +8,8 @@ import {
   getWhiteBoardData,
   loadWhiteBoardData,
   addWhiteBoardObject,
+  removeWhiteBoardObjects,
+  modifyWhiteBoardObjects,
   clearWhiteBoardContext,
 } from './utils/handler'
 
@@ -50,6 +52,8 @@ class WhiteBoard extends Component {
       onBrushColorChange,
       onBrushThicknessChange,
       onObjectAdded,
+      onObjectsModified,
+      onObjectsRemoved,
     } = this.props
 
     if (visible === true) {
@@ -66,6 +70,8 @@ class WhiteBoard extends Component {
             brushColor={brushColor}
             brushThickness={brushThickness}
             onObjectAdded={onObjectAdded}
+            onObjectsModified={onObjectsModified}
+            onObjectsRemoved={onObjectsRemoved}
           />
           <ToolBar
             ref={(ref) => {
@@ -107,6 +113,8 @@ WhiteBoard.propTypes = {
   onBrushColorChange: PropTypes.func,
   onBrushThicknessChange: PropTypes.func,
   onObjectAdded: PropTypes.func,
+  onObjectsModified: PropTypes.func,
+  onObjectsRemoved: PropTypes.func,
 }
 
 WhiteBoard.defaultProps = {
@@ -134,6 +142,8 @@ WhiteBoard.defaultProps = {
   onBrushColorChange: () => {},
   onBrushThicknessChange: () => {},
   onObjectAdded: (json) => {},
+  onObjectsModified: () => {},
+  onObjectsRemoved: () => {},
 }
 
 export {
@@ -141,5 +151,7 @@ export {
   getWhiteBoardData,
   loadWhiteBoardData,
   addWhiteBoardObject,
+  removeWhiteBoardObjects,
+  modifyWhiteBoardObjects,
   clearWhiteBoardContext,
 }

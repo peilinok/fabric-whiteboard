@@ -31,8 +31,9 @@ class Board extends Component {
     this.handleCanvasSelectionCreated = this.handleCanvasSelectionCreated.bind(
       this
     )
-    this.handleCanvasObjectMoved = this.handleCanvasObjectMoved.bind(this)
-    this.handleCanvasObjectScaled = this.handleCanvasObjectScaled.bind(this)
+    this.handleCanvasObjectsModified = this.handleCanvasObjectsModified.bind(
+      this
+    )
 
     this.handleCanvasDrawing = this.handleCanvasDrawing.bind(this)
   }
@@ -42,8 +43,6 @@ class Board extends Component {
     this.setState({
       canvasId: id,
     })
-
-    console.warn(('id', id))
   }
 
   componentDidMount() {
@@ -64,8 +63,7 @@ class Board extends Component {
     this.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
     this.fabricCanvas.on('path:created', this.handleCanvasPathCreated)
     this.fabricCanvas.on('selection:created', this.handleCanvasSelectionCreated)
-    this.fabricCanvas.on('object:moved', this.handleCanvasObjectMoved)
-    this.fabricCanvas.on('object:scaled', this.handleCanvasObjectScaled)
+    this.fabricCanvas.on('object:modified', this.handleCanvasObjectsModified)
 
     this.fabricCanvas.zoom = window.zoom ? window.zoom : 1
 
@@ -184,8 +182,12 @@ class Board extends Component {
     const { mode, onObjectAdded } = this.props
     const { preDrawerObj } = this.state
 
-    if (mode !== 'text' && preDrawerObj !== undefined)
-      onObjectAdded({ mode: mode, obj: preDrawerObj.toJSON() })
+    if (mode !== 'text' && preDrawerObj !== undefined) {
+      preDrawerObj.set('id', uuid.v4())
+      onObjectAdded(
+        JSON.stringify({ mode: mode, obj: preDrawerObj.toJSON(['id']) })
+      )
+    }
 
     this.setState({
       isDrawing: false,
@@ -214,33 +216,37 @@ class Board extends Component {
   handleCanvasPathCreated(e) {
     const { onObjectAdded } = this.props
 
-    onObjectAdded({ mode: 'pen', obj: e.path.toJSON() })
+    e.path.set('id', uuid.v4())
+    onObjectAdded(JSON.stringify({ mode: 'pen', obj: e.path.toJSON(['id']) }))
   }
 
   handleCanvasSelectionCreated(e) {
-    const { mode } = this.props
+    const { mode, onObjectsRemoved } = this.props
     if (mode !== 'eraser') return
+
+    const objects = []
 
     if (e.target._objects) {
       var etCount = e.target._objects.length
       for (var etindex = 0; etindex < etCount; etindex++) {
         this.fabricCanvas.remove(e.target._objects[etindex])
+        objects.push(e.target._objects[etindex].id)
       }
     } else {
       this.fabricCanvas.remove(e.target)
+      objects.push(e.target.id)
     }
+
+    onObjectsRemoved(JSON.stringify(objects))
 
     this.fabricCanvas.discardActiveObject()
   }
 
-  handleCanvasObjectMoved(e) {
-    console.info('moved:', e)
+  handleCanvasObjectsModified(e) {
+    //for itext will fire modified after added
+    if (e.transform === undefined || e.transform === null) return
 
-    console.warn(this.fabricCanvas.findTarget(e.e, true))
-  }
-
-  handleCanvasObjectScaled(e) {
-    console.info('scaled:', e)
+    console.warn('modified', e)
   }
 
   handleCanvasDrawing() {
@@ -297,9 +303,12 @@ class Board extends Component {
           case 'text':
             textObj = drawer.drawText(posFrom, drawerFontSize, brushColor)
             textObj.on('editing:exited', (e) => {
-              if (textObj.text !== '')
-                onObjectAdded({ mode: 'text', obj: textObj.toJSON() })
-              else this.fabricCanvas.remove(textObj) //auto remove empty itext
+              if (textObj.text !== '') {
+                textObj.set('id', uuid.v4())
+                onObjectAdded(
+                  JSON.stringify({ mode: 'text', obj: textObj.toJSON(['id']) })
+                )
+              } else this.fabricCanvas.remove(textObj) //auto remove empty itext
             })
             this.fabricCanvas.add(textObj)
             textObj.enterEditing()
@@ -363,6 +372,8 @@ Board.propTypes = {
   brushColor: PropTypes.string.isRequired,
   brushThickness: PropTypes.number.isRequired,
   onObjectAdded: PropTypes.func,
+  onObjectsModified: PropTypes.func,
+  onObjectsRemoved: PropTypes.func,
 }
 
 export default Board
