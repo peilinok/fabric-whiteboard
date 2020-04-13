@@ -11,14 +11,21 @@ fabric.Canvas.prototype.getObjectById = (id) => {
 }
 
 const isRefValid = (ref) => {
-  return (
-    ref &&
-    ref.refs &&
-    ref.refs.board &&
-    ref.refs.board.refs &&
-    ref.refs.board.refs.fabricCanvas &&
-    ref.refs.toolbar &&
-    ref.refs.toolbar.refs
+  return !(
+    ref === null ||
+    ref === undefined ||
+    ref.refs === null ||
+    ref.refs === undefined ||
+    ref.refs.board === null ||
+    ref.refs.board === undefined ||
+    ref.refs.board.refs === null ||
+    ref.refs.board.refs === undefined ||
+    ref.refs.board.refs.fabricCanvas === null ||
+    ref.refs.board.refs.fabricCanvas === undefined ||
+    ref.refs.toolbar === null ||
+    ref.refs.toolbar === undefined ||
+    ref.refs.toolbar.refs === null ||
+    ref.refs.toolbar.refs === undefined
   )
 }
 
@@ -39,13 +46,13 @@ const getWhiteBoardObjectById = (canvas, id) => {
 const getWhiteBoardData = (ref) => {
   if (isRefValid(ref) === false) return ''
 
-  return getFabricCanvasFromRef(ref).toJSON()
+  return getFabricCanvasFromRef(ref).toJSON(['id'])
 }
 
 const loadWhiteBoardData = (ref, data, cb) => {
-  if (isRefValid(ref) === true) {
-    getFabricCanvasFromRef(ref).loadFromJSON(data, cb)
-  }
+  if (isRefValid(ref) === false) return
+
+  getFabricCanvasFromRef(ref).loadFromJSON(data, cb)
 }
 
 const addWhiteBoardObject = (ref, json) => {
@@ -60,7 +67,6 @@ const addWhiteBoardObject = (ref, json) => {
       fabricCanvas.renderOnAddRemove = false
 
       objects.forEach(function (o) {
-        console.info(o['id'])
         fabricCanvas.add(o)
       })
 
@@ -93,7 +99,24 @@ const removeWhiteBoardObjects = (ref, jsonArray) => {
   }
 }
 
-const modifyWhiteBoardObjects = (ref, jsonArray) => {}
+const modifyWhiteBoardObjects = (ref, jsonArray) => {
+  if (isRefValid(ref) === false) return
+  const fabricCanvas = getFabricCanvasFromRef(ref)
+
+  console.info('apply modify', jsonArray)
+  try {
+    const targets = JSON.parse(jsonArray)
+    targets.forEach((target) => {
+      const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
+      if (targetObj !== null) targetObj.set(target)
+    })
+
+    fabricCanvas.renderAll()
+    fabricCanvas.calcOffset()
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 const clearWhiteBoardContext = (ref) => {
   if (isRefValid(ref) === false) return

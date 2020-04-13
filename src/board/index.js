@@ -222,10 +222,14 @@ class Board extends Component {
 
   handleCanvasSelectionCreated(e) {
     const { mode, onObjectsRemoved } = this.props
-    if (mode !== 'eraser') return
+    if (mode !== 'eraser') {
+      console.warn(e)
+      return
+    }
 
     const objects = []
 
+    //remove by group
     if (e.target._objects) {
       var etCount = e.target._objects.length
       for (var etindex = 0; etindex < etCount; etindex++) {
@@ -243,10 +247,24 @@ class Board extends Component {
   }
 
   handleCanvasObjectsModified(e) {
+    const { onObjectsModified } = this.props
     //for itext will fire modified after added
     if (e.transform === undefined || e.transform === null) return
 
-    console.warn('modified', e)
+    const objects = []
+    //modify by group
+    if (e.target._objects) {
+      var etCount = e.target._objects.length
+      for (var etindex = 0; etindex < etCount; etindex++) {
+        objects.push(e.target._objects[etindex].toJSON(['id']))
+      }
+    } else {
+      objects.push(e.target.toJSON(['id']))
+    }
+
+    console.warn('modified', objects)
+
+    onObjectsModified(JSON.stringify(objects))
   }
 
   handleCanvasDrawing() {
