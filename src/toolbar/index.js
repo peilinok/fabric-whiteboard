@@ -32,6 +32,7 @@ class Toolbar extends Component {
     const { toolButtons, showColorPicker, showFontSize } = this.state
     const {
       visible,
+      enabled,
       mode,
       fontSize,
       brushColor,
@@ -54,6 +55,7 @@ class Toolbar extends Component {
           <li className="toolbar-ul-li" title="thickness">
             <Thickness
               visible={true}
+              enabled={enabled}
               color={brushColor}
               value={brushThickness}
               range={brushThicknessRange}
@@ -69,7 +71,10 @@ class Toolbar extends Component {
               )}
               data={btn.key}
               title={btn.title}
-              onClick={() => onModeClick(btn.key)}
+              onClick={() => {
+                if (enabled === false) return
+                onModeClick(btn.key)
+              }}
             >
               <i
                 className={classNames(
@@ -84,6 +89,7 @@ class Toolbar extends Component {
             className="toolbar-ul-li"
             title="brush"
             onClick={() => {
+              if (enabled === false) return
               this.setState({
                 showColorPicker: !showColorPicker,
               })
@@ -118,6 +124,7 @@ class Toolbar extends Component {
 
 Toolbar.propTypes = {
   visible: PropTypes.bool,
+  enabled: PropTypes.bool,
   mode: PropTypes.oneOf(modes),
   fontSize: PropTypes.number,
   brushColor: PropTypes.string,

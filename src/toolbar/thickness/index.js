@@ -47,8 +47,10 @@ class Thickness extends Component {
   }
 
   handleClick() {
-    const { range, onChange } = this.props
+    const { range, onChange, enabled } = this.props
     const { index } = this.state
+
+    if (enabled === false) return
 
     let tempIndex = index + 1
 
@@ -67,6 +69,7 @@ class Thickness extends Component {
 
 Thickness.propTypes = {
   visible: PropTypes.bool,
+  enabled: PropTypes.bool,
   color: PropTypes.string,
   value: PropTypes.number,
   range: PropTypes.arrayOf(PropTypes.number),
