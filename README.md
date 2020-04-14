@@ -18,13 +18,13 @@ This is a whiteboard react component base on fabricjs.
 - Get|Set all objects in json
 - Pick color of brush
 - Change thickness of brushsss
+- Event of single object like new、move、scale、delete、modify
+- Operations of single object like new、move、scale、delete、modify
 
 <br/>
 
 ### Todo
 
-- Event of single object like new、move、scale、delete
-- Operations of single object like new、move、scale、delete
 - Animations
 
 <br/>
@@ -101,6 +101,12 @@ import WhiteBoard, {
   getWhiteBoardData,
   loadWhiteBoardData,
   addWhiteBoardObject,
+  modifyWhiteBoardObjects,
+  removeWhiteBoardObjects,
+  clearWhiteBoardContext,
+  createWhiteBoardSelection,
+  updateWhiteBoardSelection,
+  clearWhiteBoardSelection,
 } from 'fabric-whiteboard'
 
 export default class App extends Component {
@@ -114,6 +120,9 @@ export default class App extends Component {
       brushThickness: 2,
     }
 
+    this.refLeft = undefined
+    this.refRight = undefined
+
     this.calcBoundsSize = this.calcBoundsSize.bind(this)
     this.handleBoundsSizeChange = this.handleBoundsSizeChange.bind(this)
 
@@ -123,6 +132,11 @@ export default class App extends Component {
       this
     )
     this.handleOnObjectAdded = this.handleOnObjectAdded.bind(this)
+    this.handleOnObjectsModified = this.handleOnObjectsModified.bind(this)
+    this.handleOnObjectsRemoved = this.handleOnObjectsRemoved.bind(this)
+    this.handleOnSelectionCreated = this.handleOnSelectionCreated.bind(this)
+    this.handleOnSelectionUpdated = this.handleOnSelectionUpdated.bind(this)
+    this.handleOnSelectionCleared = this.handleOnSelectionCleared.bind(this)
   }
 
   componentDidMount() {
@@ -142,9 +156,13 @@ export default class App extends Component {
       <div className="App" id="App">
         <div className="whiteboard" id="whiteboard">
           <WhiteBoard
+            ref={(ref) => {
+              this.refLeft = ref
+            }}
             width={width}
             height={height}
             showToolbar={true}
+            enableToolbar={true}
             showBoard={true}
             mode={mode}
             onModeClick={this.handleOnModeClick}
@@ -161,6 +179,33 @@ export default class App extends Component {
             onBrushColorChange={this.handleOnBrushColorChange}
             onBrushThicknessChange={this.handleOnBrushThicknessChange}
             onObjectAdded={this.handleOnObjectAdded}
+            onObjectsModified={this.handleOnObjectsModified}
+            onObjectsRemoved={this.handleOnObjectsRemoved}
+            onSelectionCreated={this.handleOnSelectionCreated}
+            onSelectionUpdated={this.handleOnSelectionUpdated}
+            onSelectionCleared={this.handleOnSelectionCleared}
+          />
+
+          <WhiteBoard
+            ref={(ref) => {
+              this.refRight = ref
+            }}
+            width={width}
+            height={height}
+            showToolbar={true}
+            enableToolbar={false}
+            showBoard={true}
+            mode={mode}
+            brushColor={brushColor}
+            brushColors={[
+              '#f44336',
+              '#e91e63',
+              '#9c27b0',
+              '#673ab7',
+              '#3f51b5',
+              '#2196f3',
+            ]}
+            brushThickness={brushThickness}
           />
         </div>
 
@@ -168,7 +213,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              const jsonData = getWhiteBoardData()
+              const jsonData = getWhiteBoardData(this.refLeft)
               console.info(JSON.stringify(jsonData))
               const domTextarea = document.getElementById('toolbar-textarea')
               if (domTextarea) {
@@ -189,7 +234,10 @@ export default class App extends Component {
                 domTextarea.value &&
                 domTextarea.value !== ''
               ) {
-                loadWhiteBoardData(domTextarea.value, (e) => {
+                loadWhiteBoardData(this.refRight, domTextarea.value, (e) => {
+                  console.info('load whiteboard data succed', e)
+                })
+                loadWhiteBoardData(this.refLeft, domTextarea.value, (e) => {
                   console.info('load whiteboard data succed', e)
                 })
               }
@@ -197,13 +245,22 @@ export default class App extends Component {
           >
             Set
           </button>
-        </div>
-
-        <div>
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.pen)
+              clearWhiteBoardContext(this.refLeft)
+              clearWhiteBoardContext(this.refRight)
+            }}
+          >
+            Clear
+          </button>
+        </div>
+
+        <div className="toolbar">
+          <button
+            className="toolbar-button"
+            onClick={() => {
+              addWhiteBoardObject(this.refRight, objects.pen)
             }}
           >
             Add Pen
@@ -212,7 +269,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.line)
+              addWhiteBoardObject(this.refRight, objects.line)
             }}
           >
             Add Line
@@ -221,7 +278,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.dotLine)
+              addWhiteBoardObject(this.refRight, objects.dotLine)
             }}
           >
             Add DotLine
@@ -230,7 +287,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.arrow)
+              addWhiteBoardObject(this.refRight, objects.arrow)
             }}
           >
             Add Arrow
@@ -239,7 +296,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.text)
+              addWhiteBoardObject(this.refRight, objects.text)
             }}
           >
             Add Text
@@ -248,7 +305,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.rectangle)
+              addWhiteBoardObject(this.refRight, objects.rectangle)
             }}
           >
             Add Rectangle
@@ -257,7 +314,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.triangle)
+              addWhiteBoardObject(this.refRight, objects.triangle)
             }}
           >
             Add Triangle
@@ -266,7 +323,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.circle)
+              addWhiteBoardObject(this.refRight, objects.circle)
             }}
           >
             Add Circle
@@ -275,7 +332,7 @@ export default class App extends Component {
           <button
             className="toolbar-button"
             onClick={() => {
-              addWhiteBoardObject(objects.ellipse)
+              addWhiteBoardObject(this.refRight, objects.ellipse)
             }}
           >
             Add Ellipse
@@ -326,10 +383,27 @@ export default class App extends Component {
   }
 
   handleOnObjectAdded(object) {
-    console.info('new object', JSON.stringify(object))
-    console.info('try pase', JSON.parse(JSON.stringify(object)))
+    addWhiteBoardObject(this.refRight, object)
   }
-}
 
+  handleOnObjectsModified(object) {
+    modifyWhiteBoardObjects(this.refRight, object)
+  }
+
+  handleOnObjectsRemoved(objects) {
+    removeWhiteBoardObjects(this.refRight, objects)
+  }
+
+  handleOnSelectionCreated(selection) {
+    createWhiteBoardSelection(this.refRight, selection)
+  }
+
+  handleOnSelectionUpdated(selection) {
+    updateWhiteBoardSelection(this.refRight, selection)
+  }
+
+  handleOnSelectionCleared(selection) {
+    clearWhiteBoardSelection(this.refRight, selection)
+  }
 }
 ```
