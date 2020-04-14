@@ -308,10 +308,18 @@ class Board extends Component {
 
     if (!e.target) return
 
+    const objects = this.fabricCanvas.getActiveObjects()
+    const selectedIds = []
+    objects.forEach((obj) => {
+      selectedIds.push(obj.id)
+    })
+
     onObjectsModified(
       JSON.stringify({
         target: e.target.toJSON(['id', 'type']),
+        selectedIds: selectedIds,
         hasTransform: e.transform !== null && e.transform !== undefined,
+        transform: e.transform,
       })
     )
   }

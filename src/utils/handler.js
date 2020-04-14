@@ -112,18 +112,31 @@ const modifyWhiteBoardObjects = (ref, json) => {
   console.debug('modifyWhiteBoardObjects')
 
   try {
-    const { target, hasTransform } = JSON.parse(json)
+    const { target, hasTransform, transform, selectedIds } = JSON.parse(json)
 
     if (target.type === 'textbox' && hasTransform === false) {
       const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
       if (targetObj !== null) targetObj.set('text', target.text)
     } else {
-      const activeObj = fabricCanvas.getActiveObject()
-      if (activeObj !== undefined) {
+      let activeObj = fabricCanvas.getActiveObject()
+      if (activeObj !== undefined && activeObj !== null) {
         activeObj.set(target)
+      } else {
+        const selectedObjs = []
+        selectedIds.forEach((id) => {
+          let existObj = getWhiteBoardObjectById(fabricCanvas, id)
+          if (existObj !== null) selectedObjs.push(existObj)
+        })
+        activeObj = new fabric.ActiveSelection(selectedObjs, {
+          canvas: fabricCanvas,
+        })
+
+        activeObj.set(target)
+
+        fabricCanvas.setActiveObject(activeObj)
       }
 
-      fabricCanvas.renderAll()
+      fabricCanvas.requestRenderAll()
     }
   } catch (error) {
     console.error(error)
