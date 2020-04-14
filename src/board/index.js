@@ -158,7 +158,7 @@ class Board extends Component {
 
   render() {
     const { canvasId } = this.state
-    const { visible, width, height } = this.props
+    const { visible, enabled, width, height } = this.props
 
     if (visible === false) return <div></div>
 
@@ -171,6 +171,14 @@ class Board extends Component {
           height={height}
           style={{ width: width, height: height }}
         />
+        {enabled === false ? (
+          <div
+            className="fabric-whiteboard-mask"
+            style={{ width: width, height: height }}
+          />
+        ) : (
+          <div />
+        )}
       </div>
     )
   }

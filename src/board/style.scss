@@ -1,5 +1,16 @@
 .fabric-whiteboard-board {
   width: 100%;
   height: 100%;
+  position: relative;
+}
 
+.fabric-whiteboard-canvas {
+  z-index: 498;
+}
+
+.fabric-whiteboard-mask {
+  position: absolute;
+  z-index: 500;
+  top: 0px;
+  left: 0px;
 }
