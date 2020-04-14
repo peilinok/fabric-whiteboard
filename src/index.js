@@ -75,6 +75,7 @@ class WhiteBoard extends Component {
             mode={mode}
             width={width}
             height={height}
+            fontSize={fontSize}
             brushColor={brushColor}
             brushThickness={brushThickness}
             onObjectAdded={onObjectAdded}

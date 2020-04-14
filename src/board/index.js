@@ -13,7 +13,6 @@ class Board extends Component {
     super(props)
 
     this.state = {
-      drawerFontSize: 24,
       isDrawing: false,
       moveCount: 1,
       preDrawerObj: undefined,
@@ -336,7 +335,6 @@ class Board extends Component {
 
   handleCanvasDrawing() {
     const {
-      drawerFontSize,
       preDrawerObj,
       preTextObj,
       isDrawing,
@@ -344,7 +342,13 @@ class Board extends Component {
       posFrom,
       posTo,
     } = this.state
-    const { mode, brushColor, brushThickness, onObjectAdded } = this.props
+    const {
+      mode,
+      fontSize,
+      brushColor,
+      brushThickness,
+      onObjectAdded,
+    } = this.props
     if (isDrawing === false || !moveCount % 2) return
 
     let drawerObj = undefined
@@ -386,7 +390,7 @@ class Board extends Component {
             )
             break
           case 'text':
-            textObj = drawer.drawText(posFrom, drawerFontSize, brushColor)
+            textObj = drawer.drawText(posFrom, fontSize, brushColor)
             textObj.set('id', uuid.v4())
             textObj.on('editing:exited', (e) => {
               if (textObj.text !== '') {
@@ -455,6 +459,7 @@ Board.propTypes = {
   mode: PropTypes.oneOf(modes).isRequired,
   width: PropTypes.string,
   height: PropTypes.string,
+  fontSize: PropTypes.number,
   brushColor: PropTypes.string.isRequired,
   brushThickness: PropTypes.number.isRequired,
   onObjectAdded: PropTypes.func,
