@@ -8,5 +8,6 @@ src/
 .eslintrc.json
 .gitignore
 .prettierrc.json
+.travis.yml
 yarn.lock
 yarn-error.log
