@@ -1,5 +1,9 @@
 # fabric-whiteboard
 
+[![Build Status](https://travis-ci.org/peilinok/fabric-whiteboard.svg?branch=master)](https://travis-ci.org/peilinok/fabric-whiteboard)
+
+<br/>
+
 This is a whiteboard react component base on fabricjs.
 
 <br/>
