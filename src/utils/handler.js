@@ -1,15 +1,9 @@
 import { fabric } from 'fabric'
 
-fabric.Canvas.prototype.getObjectById = (id) => {
-  var objs = fabric.Canvas.prototype.getObjects()
-  for (var i = 0, len = objs.length; i < len; i++) {
-    if (objs[i].id == id) {
-      return objs[i]
-    }
-  }
-  return null
-}
-
+/**
+ * return true if ref is valid,otherwise return false
+ * @param {object} ref
+ */
 const isRefValid = (ref) => {
   return !(
     ref === null ||
@@ -29,10 +23,19 @@ const isRefValid = (ref) => {
   )
 }
 
+/**
+ * return fabric canvas from ref of WhiteBoard,should call isRefValid first
+ * @param {object} ref
+ */
 const getFabricCanvasFromRef = (ref) => {
   return ref.refs.board.refs.fabricCanvas
 }
 
+/**
+ * return object by id in specified fabric canvas,return null when do not have one
+ * @param {object} canvas
+ * @param {string} id
+ */
 const getWhiteBoardObjectById = (canvas, id) => {
   var objs = canvas.getObjects()
   for (var i = 0, len = objs.length; i < len; i++) {
@@ -43,18 +46,33 @@ const getWhiteBoardObjectById = (canvas, id) => {
   return null
 }
 
+/**
+ * return whiteboard data in json
+ * @param {object} ref
+ */
 const getWhiteBoardData = (ref) => {
   if (isRefValid(ref) === false) return ''
 
   return getFabricCanvasFromRef(ref).toJSON(['id'])
 }
 
+/**
+ * load data with specified fabric canvas in ref
+ * @param {object} ref
+ * @param {string} data
+ * @param {function} cb
+ */
 const loadWhiteBoardData = (ref, data, cb) => {
   if (isRefValid(ref) === false) return
 
   getFabricCanvasFromRef(ref).loadFromJSON(data, cb)
 }
 
+/**
+ * add objects defined in json to specified fabric canvas
+ * @param {object} ref
+ * @param {string} json
+ */
 const addWhiteBoardObject = (ref, json) => {
   if (isRefValid(ref) === false) return
 
@@ -82,6 +100,11 @@ const addWhiteBoardObject = (ref, json) => {
   }
 }
 
+/**
+ * remove objects by ids in specified fabric canvas in ref
+ * @param {object} ref
+ * @param {string} jsonArray
+ */
 const removeWhiteBoardObjects = (ref, jsonArray) => {
   if (isRefValid(ref) === false) return
   const fabricCanvas = getFabricCanvasFromRef(ref)
@@ -105,6 +128,11 @@ const removeWhiteBoardObjects = (ref, jsonArray) => {
   }
 }
 
+/**
+ * apply modify by specified selection or object,if specified a selection will auto add one
+ * @param {object} ref
+ * @param {string} json
+ */
 const modifyWhiteBoardObjects = (ref, json) => {
   if (isRefValid(ref) === false) return
   const fabricCanvas = getFabricCanvasFromRef(ref)
@@ -143,12 +171,21 @@ const modifyWhiteBoardObjects = (ref, json) => {
   }
 }
 
+/**
+ * clear all context in specified fabric canvas in ref
+ * @param {object} ref
+ */
 const clearWhiteBoardContext = (ref) => {
   if (isRefValid(ref) === false) return
 
   getFabricCanvasFromRef(ref).clear()
 }
 
+/**
+ * create selection
+ * @param {object} ref
+ * @param {string} selectionJson
+ */
 const createWhiteBoardSelection = (ref, selectionJson) => {
   if (isRefValid(ref) === false) return
 
@@ -174,6 +211,11 @@ const createWhiteBoardSelection = (ref, selectionJson) => {
   }
 }
 
+/**
+ * update specified selection,include add and remove
+ * @param {object} ref
+ * @param {string} selectionJson
+ */
 const updateWhiteBoardSelection = (ref, selectionJson) => {
   if (isRefValid(ref) === false) return
 
@@ -218,6 +260,11 @@ const updateWhiteBoardSelection = (ref, selectionJson) => {
   }
 }
 
+/**
+ * clear selection
+ * @param {object} ref
+ * @param {string} selectionJson
+ */
 const clearWhiteBoardSelection = (ref, selectionJson) => {
   if (isRefValid(ref) === false) return
   const fabricCanvas = getFabricCanvasFromRef(ref)

@@ -310,9 +310,11 @@ class Board extends Component {
 
     const objects = this.fabricCanvas.getActiveObjects()
     const selectedIds = []
-    objects.forEach((obj) => {
-      selectedIds.push(obj.id)
-    })
+    if (objects) {
+      objects.forEach((obj) => {
+        selectedIds.push(obj.id)
+      })
+    }
 
     onObjectsModified(
       JSON.stringify({
