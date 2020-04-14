@@ -20,6 +20,7 @@ class Board extends Component {
       preTextObj: undefined,
       posFrom: { x: 0, y: 0 },
       posTo: { x: 0, y: 0 },
+      currentGroupId: '',
     }
 
     this.fabricCanvas = null
@@ -29,6 +30,12 @@ class Board extends Component {
     this.handleCanvasMouseMove = this.handleCanvasMouseMove.bind(this)
     this.handleCanvasPathCreated = this.handleCanvasPathCreated.bind(this)
     this.handleCanvasSelectionCreated = this.handleCanvasSelectionCreated.bind(
+      this
+    )
+    this.handleCanvasSelectionUpdated = this.handleCanvasSelectionUpdated.bind(
+      this
+    )
+    this.handleCanvasSelectionCleared = this.handleCanvasSelectionCleared.bind(
       this
     )
     this.handleCanvasObjectsModified = this.handleCanvasObjectsModified.bind(
@@ -52,8 +59,8 @@ class Board extends Component {
     this.fabricCanvas = new fabric.Canvas(canvasId, {
       isDrawingMode: false,
       skipTargetFind: false,
-      selectable: true,
-      selection: true,
+      selectable: false,
+      selection: false,
     })
 
     this.fabricCanvas.freeDrawingBrush.color = brushColor
@@ -63,6 +70,8 @@ class Board extends Component {
     this.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
     this.fabricCanvas.on('path:created', this.handleCanvasPathCreated)
     this.fabricCanvas.on('selection:created', this.handleCanvasSelectionCreated)
+    this.fabricCanvas.on('selection:updated', this.handleCanvasSelectionUpdated)
+    this.fabricCanvas.on('selection:cleared', this.handleCanvasSelectionCleared)
     this.fabricCanvas.on('object:modified', this.handleCanvasObjectsModified)
 
     this.fabricCanvas.zoom = window.zoom ? window.zoom : 1
@@ -221,29 +230,63 @@ class Board extends Component {
   }
 
   handleCanvasSelectionCreated(e) {
-    const { mode, onObjectsRemoved } = this.props
-    if (mode !== 'eraser') {
-      console.warn(e)
+    const { mode, onObjectsRemoved, onSelectionCreated } = this.props
+
+    const selectedIds = []
+    if (e.selected) {
+      e.selected.forEach((obj) => {
+        selectedIds.push(obj.id)
+      })
+    }
+
+    if (mode === 'eraser') {
+      this.fabricCanvas.remove(e.selected)
+      onObjectsRemoved(JSON.stringify(selectedIds))
+
+      this.fabricCanvas.discardActiveObject()
       return
     }
 
-    const objects = []
+    onSelectionCreated(JSON.stringify(selectedIds))
+  }
 
-    //remove by group
-    if (e.target._objects) {
-      var etCount = e.target._objects.length
-      for (var etindex = 0; etindex < etCount; etindex++) {
-        this.fabricCanvas.remove(e.target._objects[etindex])
-        objects.push(e.target._objects[etindex].id)
-      }
-    } else {
-      this.fabricCanvas.remove(e.target)
-      objects.push(e.target.id)
+  handleCanvasSelectionUpdated(e) {
+    const { mode, onSelectionUpdated } = this.props
+
+    const deselectedIds = []
+    const selectedIds = []
+    if (e.deselected) {
+      e.deselected.forEach((obj) => {
+        deselectedIds.push(obj.id)
+      })
     }
 
-    onObjectsRemoved(JSON.stringify(objects))
+    if (e.selected) {
+      e.selected.forEach((obj) => {
+        selectedIds.push(obj.id)
+      })
+    }
 
-    this.fabricCanvas.discardActiveObject()
+    onSelectionUpdated(
+      JSON.stringify({
+        selectedIds: selectedIds,
+        deselectedIds: deselectedIds,
+      })
+    )
+  }
+
+  handleCanvasSelectionCleared(e) {
+    const { onSelectionCleared } = this.props
+
+    const deselectedIds = []
+
+    if (e.deselected) {
+      e.deselected.forEach((obj) => {
+        deselectedIds.push(obj.id)
+      })
+    }
+
+    onSelectionCleared(JSON.stringify(deselectedIds))
   }
 
   handleCanvasObjectsModified(e) {
@@ -392,6 +435,9 @@ Board.propTypes = {
   onObjectAdded: PropTypes.func,
   onObjectsModified: PropTypes.func,
   onObjectsRemoved: PropTypes.func,
+  onSelectionCreated: PropTypes.func,
+  onSelectionUpdated: PropTypes.func,
+  onSelectionCleared: PropTypes.func,
 }
 
 export default Board

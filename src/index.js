@@ -11,6 +11,9 @@ import {
   removeWhiteBoardObjects,
   modifyWhiteBoardObjects,
   clearWhiteBoardContext,
+  createWhiteBoardSelection,
+  updateWhiteBoardSelection,
+  clearWhiteBoardSelection,
 } from './utils/handler'
 
 import Board from './board'
@@ -54,6 +57,9 @@ class WhiteBoard extends Component {
       onObjectAdded,
       onObjectsModified,
       onObjectsRemoved,
+      onSelectionCreated,
+      onSelectionUpdated,
+      onSelectionCleared,
     } = this.props
 
     if (visible === true) {
@@ -72,6 +78,9 @@ class WhiteBoard extends Component {
             onObjectAdded={onObjectAdded}
             onObjectsModified={onObjectsModified}
             onObjectsRemoved={onObjectsRemoved}
+            onSelectionCreated={onSelectionCreated}
+            onSelectionUpdated={onSelectionUpdated}
+            onSelectionCleared={onSelectionCleared}
           />
           <ToolBar
             ref={(ref) => {
@@ -115,6 +124,9 @@ WhiteBoard.propTypes = {
   onObjectAdded: PropTypes.func,
   onObjectsModified: PropTypes.func,
   onObjectsRemoved: PropTypes.func,
+  onSelectionCreated: PropTypes.func,
+  onSelectionUpdated: PropTypes.func,
+  onSelectionCleared: PropTypes.func,
 }
 
 WhiteBoard.defaultProps = {
@@ -144,6 +156,9 @@ WhiteBoard.defaultProps = {
   onObjectAdded: (json) => {},
   onObjectsModified: () => {},
   onObjectsRemoved: () => {},
+  onSelectionCreated: () => {},
+  onSelectionUpdated: () => {},
+  onSelectionCleared: () => {},
 }
 
 export {
@@ -154,4 +169,7 @@ export {
   removeWhiteBoardObjects,
   modifyWhiteBoardObjects,
   clearWhiteBoardContext,
+  createWhiteBoardSelection,
+  updateWhiteBoardSelection,
+  clearWhiteBoardSelection,
 }

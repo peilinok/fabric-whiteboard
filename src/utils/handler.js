@@ -103,7 +103,6 @@ const modifyWhiteBoardObjects = (ref, jsonArray) => {
   if (isRefValid(ref) === false) return
   const fabricCanvas = getFabricCanvasFromRef(ref)
 
-  console.info('apply modify', jsonArray)
   try {
     const targets = JSON.parse(jsonArray)
     targets.forEach((target) => {
@@ -124,6 +123,80 @@ const clearWhiteBoardContext = (ref) => {
   getFabricCanvasFromRef(ref).clear()
 }
 
+const createWhiteBoardSelection = (ref, selectionJson) => {
+  if (isRefValid(ref) === false) return
+  try {
+    const selectedIds = JSON.parse(selectionJson)
+    const fabricCanvas = getFabricCanvasFromRef(ref)
+
+    const objects = []
+    selectedIds.forEach((id) => {
+      const targetObj = getWhiteBoardObjectById(fabricCanvas, id)
+      if (targetObj !== null) objects.push(targetObj)
+    })
+
+    fabricCanvas.discardActiveObject()
+
+    const sel = new fabric.ActiveSelection(objects, { canvas: fabricCanvas })
+
+    fabricCanvas.setActiveObject(sel)
+    fabricCanvas.requestRenderAll()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const updateWhiteBoardSelection = (ref, selectionJson) => {
+  if (isRefValid(ref) === false) return
+
+  try {
+    const fabricCanvas = getFabricCanvasFromRef(ref)
+    const { selectedIds, deselectedIds } = JSON.parse(selectionJson)
+
+    let sel = fabricCanvas.getActiveObject()
+
+    if (!sel || sel.type !== 'activeSelection') {
+      fabricCanvas.discardActiveObject()
+
+      const selObjects = []
+      selectedIds.forEach((id) => {
+        const targetObj = getWhiteBoardObjectById(fabricCanvas, id)
+        if (targetObj !== null) selObjects.push(targetObj)
+      })
+
+      sel = new fabric.ActiveSelection(selObjects, { canvas: fabricCanvas })
+
+      fabricCanvas.setActiveObject(sel)
+      fabricCanvas.requestRenderAll()
+    } else {
+      selectedIds.forEach((id) => {
+        const targetObj = getWhiteBoardObjectById(fabricCanvas, id)
+        if (targetObj !== null && sel.contains(targetObj) === false)
+          sel.addWithUpdate(targetObj)
+      })
+
+      deselectedIds.forEach((id) => {
+        const targetObj = getWhiteBoardObjectById(fabricCanvas, id)
+        if (targetObj !== null && sel.contains(targetObj) === true)
+          sel.removeWithUpdate(targetObj)
+      })
+
+      fabricCanvas.requestRenderAll()
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const clearWhiteBoardSelection = (ref, selectionJson) => {
+  if (isRefValid(ref) === false) return
+  const fabricCanvas = getFabricCanvasFromRef(ref)
+  const deselectedIds = JSON.parse(selectionJson)
+
+  fabricCanvas.discardActiveObject()
+  fabricCanvas.requestRenderAll()
+}
+
 export {
   getWhiteBoardData,
   loadWhiteBoardData,
@@ -131,4 +204,7 @@ export {
   modifyWhiteBoardObjects,
   removeWhiteBoardObjects,
   clearWhiteBoardContext,
+  createWhiteBoardSelection,
+  updateWhiteBoardSelection,
+  clearWhiteBoardSelection,
 }
