@@ -44,6 +44,7 @@ class WhiteBoard extends Component {
       height,
       showToolbar,
       showBoard,
+      enableBoard,
       enableToolbar,
       mode,
       fontSize,
@@ -70,6 +71,7 @@ class WhiteBoard extends Component {
               this.board = ref
             }}
             visible={showBoard}
+            enabled={enableBoard}
             mode={mode}
             width={width}
             height={height}
@@ -112,6 +114,7 @@ WhiteBoard.propTypes = {
   showToolbar: PropTypes.bool,
   enableToolbar: PropTypes.bool,
   showBoard: PropTypes.bool,
+  enableBoard: PropTypes.bool,
   mode: PropTypes.oneOf(modes),
   fontSize: PropTypes.number,
   brushColor: PropTypes.string,
@@ -137,6 +140,7 @@ WhiteBoard.defaultProps = {
   showToolbar: true,
   enableToolbar: true,
   showBoard: true,
+  enableBoard: true,
   mode: modes[0],
   fontSize: 22,
   brushColor: '#f44336',

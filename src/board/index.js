@@ -86,37 +86,48 @@ class Board extends Component {
     //skipTargetFind all el can not select
     //selectable can select
     //selection show selection bounds
-    if (nextProps.mode !== this.props.mode) {
+    if (
+      nextProps.mode !== this.props.mode ||
+      nextProps.enabled !== this.props.enabled
+    ) {
       const { preTextObj } = this.state
       if (preTextObj !== undefined) {
         preTextObj.exitEditing()
         this.setState({ preTextObj: undefined })
       }
-      switch (nextProps.mode) {
-        case 'select':
-          this.fabricCanvas.isDrawingMode = false
-          this.fabricCanvas.skipTargetFind = false
-          this.fabricCanvas.selectable = true
-          this.fabricCanvas.selection = true
-          break
-        case 'pen':
-          this.fabricCanvas.isDrawingMode = true
-          this.fabricCanvas.skipTargetFind = true
-          this.fabricCanvas.selectable = false
-          this.fabricCanvas.selection = false
-          break
-        case 'eraser':
-          this.fabricCanvas.isDrawingMode = false
-          this.fabricCanvas.skipTargetFind = false
-          this.fabricCanvas.selectable = true
-          this.fabricCanvas.selection = true
-          break
-        default:
-          this.fabricCanvas.isDrawingMode = false
-          this.fabricCanvas.skipTargetFind = true
-          this.fabricCanvas.selectable = false
-          this.fabricCanvas.selection = false
-          break
+
+      if (nextProps.enabled === false) {
+        this.fabricCanvas.isDrawingMode = false
+        this.fabricCanvas.skipTargetFind = true
+        this.fabricCanvas.selectable = false
+        this.fabricCanvas.selection = false
+      } else {
+        switch (nextProps.mode) {
+          case 'select':
+            this.fabricCanvas.isDrawingMode = false
+            this.fabricCanvas.skipTargetFind = false
+            this.fabricCanvas.selectable = true
+            this.fabricCanvas.selection = true
+            break
+          case 'pen':
+            this.fabricCanvas.isDrawingMode = true
+            this.fabricCanvas.skipTargetFind = true
+            this.fabricCanvas.selectable = false
+            this.fabricCanvas.selection = false
+            break
+          case 'eraser':
+            this.fabricCanvas.isDrawingMode = false
+            this.fabricCanvas.skipTargetFind = false
+            this.fabricCanvas.selectable = true
+            this.fabricCanvas.selection = true
+            break
+          default:
+            this.fabricCanvas.isDrawingMode = false
+            this.fabricCanvas.skipTargetFind = true
+            this.fabricCanvas.selectable = false
+            this.fabricCanvas.selection = false
+            break
+        }
       }
     }
 
@@ -169,6 +180,8 @@ class Board extends Component {
   }
 
   handleCanvasMouseDown(options) {
+    const { enabled } = this.props
+    if (enabled === false) return
     this.setState(
       {
         isDrawing: true,
@@ -230,7 +243,8 @@ class Board extends Component {
   }
 
   handleCanvasSelectionCreated(e) {
-    const { mode, onObjectsRemoved, onSelectionCreated } = this.props
+    const { mode, enabled, onObjectsRemoved, onSelectionCreated } = this.props
+    if (enabled === false) return
 
     const selectedIds = []
     if (e.selected) {
@@ -419,6 +433,7 @@ class Board extends Component {
 
 Board.propTypes = {
   visible: PropTypes.bool.isRequired,
+  enabled: PropTypes.bool.isRequired,
   mode: PropTypes.oneOf(modes).isRequired,
   width: PropTypes.string,
   height: PropTypes.string,
