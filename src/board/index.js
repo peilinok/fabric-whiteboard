@@ -291,23 +291,15 @@ class Board extends Component {
 
   handleCanvasObjectsModified(e) {
     const { onObjectsModified } = this.props
-    //for itext will fire modified after added
-    if (e.transform === undefined || e.transform === null) return
 
-    const objects = []
-    //modify by group
-    if (e.target._objects) {
-      var etCount = e.target._objects.length
-      for (var etindex = 0; etindex < etCount; etindex++) {
-        objects.push(e.target._objects[etindex].toJSON(['id']))
-      }
-    } else {
-      objects.push(e.target.toJSON(['id']))
-    }
+    if (!e.target) return
 
-    console.warn('modified', objects)
-
-    onObjectsModified(JSON.stringify(objects))
+    onObjectsModified(
+      JSON.stringify({
+        target: e.target.toJSON(['id', 'type']),
+        hasTransform: e.transform !== null && e.transform !== undefined,
+      })
+    )
   }
 
   handleCanvasDrawing() {
@@ -363,9 +355,9 @@ class Board extends Component {
             break
           case 'text':
             textObj = drawer.drawText(posFrom, drawerFontSize, brushColor)
+            textObj.set('id', uuid.v4())
             textObj.on('editing:exited', (e) => {
               if (textObj.text !== '') {
-                textObj.set('id', uuid.v4())
                 onObjectAdded(
                   JSON.stringify({ mode: 'text', obj: textObj.toJSON(['id']) })
                 )

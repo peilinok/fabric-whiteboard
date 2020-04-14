@@ -58,6 +58,8 @@ const loadWhiteBoardData = (ref, data, cb) => {
 const addWhiteBoardObject = (ref, json) => {
   if (isRefValid(ref) === false) return
 
+  console.debug('addWhiteBoardObject')
+
   try {
     const { mode, obj } = JSON.parse(json)
     const fabricCanvas = getFabricCanvasFromRef(ref)
@@ -67,7 +69,9 @@ const addWhiteBoardObject = (ref, json) => {
       fabricCanvas.renderOnAddRemove = false
 
       objects.forEach(function (o) {
-        fabricCanvas.add(o)
+        let existObj = getWhiteBoardObjectById(fabricCanvas, o.id)
+
+        if (existObj === null) fabricCanvas.add(o)
       })
 
       fabricCanvas.renderOnAddRemove = origRenderOnAddRemove
@@ -81,6 +85,8 @@ const addWhiteBoardObject = (ref, json) => {
 const removeWhiteBoardObjects = (ref, jsonArray) => {
   if (isRefValid(ref) === false) return
   const fabricCanvas = getFabricCanvasFromRef(ref)
+
+  console.debug('removeWhiteBoardObjects')
 
   try {
     var origRenderOnAddRemove = fabricCanvas.renderOnAddRemove
@@ -99,19 +105,26 @@ const removeWhiteBoardObjects = (ref, jsonArray) => {
   }
 }
 
-const modifyWhiteBoardObjects = (ref, jsonArray) => {
+const modifyWhiteBoardObjects = (ref, json) => {
   if (isRefValid(ref) === false) return
   const fabricCanvas = getFabricCanvasFromRef(ref)
 
-  try {
-    const targets = JSON.parse(jsonArray)
-    targets.forEach((target) => {
-      const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
-      if (targetObj !== null) targetObj.set(target)
-    })
+  console.debug('modifyWhiteBoardObjects')
 
-    fabricCanvas.renderAll()
-    fabricCanvas.calcOffset()
+  try {
+    const { target, hasTransform } = JSON.parse(json)
+
+    if (target.type === 'textbox' && hasTransform === false) {
+      const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
+      if (targetObj !== null) targetObj.set('text', target.text)
+    } else {
+      const activeObj = fabricCanvas.getActiveObject()
+      if (activeObj !== undefined) {
+        activeObj.set(target)
+      }
+
+      fabricCanvas.renderAll()
+    }
   } catch (error) {
     console.error(error)
   }
@@ -125,6 +138,8 @@ const clearWhiteBoardContext = (ref) => {
 
 const createWhiteBoardSelection = (ref, selectionJson) => {
   if (isRefValid(ref) === false) return
+
+  console.debug('createWhiteBoardSelection')
   try {
     const selectedIds = JSON.parse(selectionJson)
     const fabricCanvas = getFabricCanvasFromRef(ref)
@@ -148,6 +163,8 @@ const createWhiteBoardSelection = (ref, selectionJson) => {
 
 const updateWhiteBoardSelection = (ref, selectionJson) => {
   if (isRefValid(ref) === false) return
+
+  console.debug('updateWhiteBoardSelection')
 
   try {
     const fabricCanvas = getFabricCanvasFromRef(ref)
