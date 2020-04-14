@@ -236,11 +236,11 @@ class Board extends Component {
     if (e.selected) {
       e.selected.forEach((obj) => {
         selectedIds.push(obj.id)
+        if (mode === 'eraser') this.fabricCanvas.remove(obj)
       })
     }
 
     if (mode === 'eraser') {
-      this.fabricCanvas.remove(e.selected)
       onObjectsRemoved(JSON.stringify(selectedIds))
 
       this.fabricCanvas.discardActiveObject()
