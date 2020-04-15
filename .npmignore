@@ -9,5 +9,6 @@ src/
 .gitignore
 .prettierrc.json
 .travis.yml
+.babelrc
 yarn.lock
 yarn-error.log
