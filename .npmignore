@@ -1,6 +1,7 @@
 node_modules/
 build/
 src/
+coverage/
 .git/
 .vscode/
 .editorconfig
