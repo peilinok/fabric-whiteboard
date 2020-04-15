@@ -8,7 +8,22 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack --progress",
-    "watch": "webpack --watch --progress"
+    "watch": "webpack --watch --progress",
+    "test": "jest --colors --coverage"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__jest__/__mocks__/fileMock.js",
+      "\\.(css|scss)$": "identity-obj-proxy",
+      "^cpn(.*)$": "<rootDir>/src/components$1"
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -18,8 +33,11 @@
     "class-names": "^1.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.4.2",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "fabric": "^3.6.3",
     "file-loader": "^6.0.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^25.3.0",
     "node-sass": "^4.13.1",
     "node-uuid": "^1.4.8",
@@ -27,6 +45,7 @@
     "react": "^16.13.1",
     "react-color": "^2.18.0",
     "react-dom": "^16.13.1",
+    "react-test-renderer": "^16.13.1",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.1.3",
     "url-loader": "^4.0.0",
