@@ -53,6 +53,8 @@ const getWhiteBoardObjectById = (canvas, id) => {
 const getWhiteBoardData = (ref) => {
   if (isRefValid(ref) === false) return ''
 
+  console.debug('getWhiteBoardData')
+
   return getFabricCanvasFromRef(ref).toJSON(['id'])
 }
 
@@ -64,6 +66,8 @@ const getWhiteBoardData = (ref) => {
  */
 const loadWhiteBoardData = (ref, data, cb) => {
   if (isRefValid(ref) === false) return
+
+  console.debug('loadWhiteBoardData')
 
   getFabricCanvasFromRef(ref).loadFromJSON(data, cb)
 }
@@ -148,13 +152,41 @@ const modifyWhiteBoardObjects = (ref, json) => {
     } else {
       let activeObj = fabricCanvas.getActiveObject()
       if (activeObj !== undefined && activeObj !== null) {
-        activeObj.set(target)
+        switch (transform.action) {
+          case 'drag':
+            activeObj.set({
+              left: target.left,
+              top: target.top,
+            })
+            break
+          case 'scale':
+          case 'scaleX':
+          case 'scaleY':
+            activeObj.set({
+              scaleX: target.scaleX,
+              scaleY: target.scaleY,
+              left: target.left,
+              top: target.top,
+            })
+            break
+          case 'rotate':
+            activeObj.set({
+              angle: target.angle,
+              left: target.left,
+              top: target.top,
+            })
+            break
+          default:
+            console.warn('unsupported modify', transform)
+            break
+        }
       } else {
         const selectedObjs = []
         selectedIds.forEach((id) => {
           let existObj = getWhiteBoardObjectById(fabricCanvas, id)
           if (existObj !== null) selectedObjs.push(existObj)
         })
+
         activeObj = new fabric.ActiveSelection(selectedObjs, {
           canvas: fabricCanvas,
         })
@@ -178,6 +210,8 @@ const modifyWhiteBoardObjects = (ref, json) => {
 const clearWhiteBoardContext = (ref) => {
   if (isRefValid(ref) === false) return
 
+  console.debug('clearWhiteBoardContext')
+
   getFabricCanvasFromRef(ref).clear()
 }
 
@@ -190,8 +224,9 @@ const createWhiteBoardSelection = (ref, selectionJson) => {
   if (isRefValid(ref) === false) return
 
   console.debug('createWhiteBoardSelection')
+
   try {
-    const selectedIds = JSON.parse(selectionJson)
+    const { target, selectedIds } = JSON.parse(selectionJson)
     const fabricCanvas = getFabricCanvasFromRef(ref)
 
     const objects = []
@@ -203,6 +238,8 @@ const createWhiteBoardSelection = (ref, selectionJson) => {
     fabricCanvas.discardActiveObject()
 
     const sel = new fabric.ActiveSelection(objects, { canvas: fabricCanvas })
+
+    console.warn(target, sel)
 
     fabricCanvas.setActiveObject(sel)
     fabricCanvas.requestRenderAll()
@@ -267,8 +304,10 @@ const updateWhiteBoardSelection = (ref, selectionJson) => {
  */
 const clearWhiteBoardSelection = (ref, selectionJson) => {
   if (isRefValid(ref) === false) return
+
+  console.debug('clearWhiteBoardSelection')
+
   const fabricCanvas = getFabricCanvasFromRef(ref)
-  const deselectedIds = JSON.parse(selectionJson)
 
   fabricCanvas.discardActiveObject()
   fabricCanvas.requestRenderAll()

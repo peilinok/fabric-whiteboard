@@ -268,7 +268,9 @@ class Board extends Component {
       return
     }
 
-    onSelectionCreated(JSON.stringify(selectedIds))
+    onSelectionCreated(
+      JSON.stringify({ target: e.target.toJSON(), selectedIds })
+    )
   }
 
   handleCanvasSelectionUpdated(e) {
