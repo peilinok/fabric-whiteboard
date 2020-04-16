@@ -335,10 +335,14 @@ const updateWhiteBoardSelection = (ref, selectionJson) => {
       selectionJson
     )
 
+    const selObjects = []
     let sel = fabricCanvas.getActiveObject()
 
-    if (sel.type !== target.type || sel.id !== target.id) {
+    if (sel && (sel.type !== target.type || sel.id !== target.id)) {
       console.debug('type or id is different,discard')
+      //should add already selected object,
+      //for that update will not trigger already selected objects
+      selObjects.push(sel)
       fabricCanvas.discardActiveObject()
       sel = null
     }
@@ -365,13 +369,12 @@ const updateWhiteBoardSelection = (ref, selectionJson) => {
     //sel do not exist,create one
     if (target.type === 'activeSelection') {
       console.debug('sel do not exist,create one')
-      const selObjects = []
       selectedIds.forEach((id) => {
         const targetObj = getWhiteBoardObjectById(fabricCanvas, id)
         if (targetObj !== null) selObjects.push(targetObj)
       })
 
-      sel = new fabric.ActiveSelection(selObjects, target)
+      sel = new fabric.ActiveSelection(selObjects)
       sel.set('canvas', fabricCanvas)
 
       const desiredMatrix = fabric.util.multiplyTransformMatrices(

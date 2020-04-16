@@ -248,7 +248,7 @@ class Board extends Component {
 
   handleCanvasPathCreated(e) {
     const { enabled, onObjectAdded } = this.props
-    if (enabled === false || e.e === undefined) return
+    if (enabled === false || e.path === undefined) return
     //console.warn('handleCanvasPathCreated', e)
 
     e.path.set('id', uuid.v4())
