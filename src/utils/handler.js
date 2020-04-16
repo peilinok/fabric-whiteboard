@@ -201,6 +201,7 @@ const modifyWhiteBoardObjects = (ref, json) => {
           switch (targetObj.type) {
             case 'path':
               targetObj.set(obj.obj)
+              targetObj.setCoords()
               break
             case 'line':
             case 'circle':
@@ -244,11 +245,13 @@ const modifyWhiteBoardObjects = (ref, json) => {
         sel.relationship = desiredMatrix
 
         fabricCanvas.setActiveObject(sel)
+
+        sel.setCoords()
       } else
         applyMatrixWithRelationship(activeObj, activeObj.relationship, matrix)
-    }
 
-    fabricCanvas.requestRenderAll()
+      fabricCanvas.requestRenderAll()
+    }
   } catch (error) {
     console.error(error)
   }
