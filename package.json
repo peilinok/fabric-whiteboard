@@ -1,6 +1,6 @@
 {
   "name": "fabric-whiteboard",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "a whiteboard react component based on febric",
   "main": "./lib/index.js",
   "repository": "https://github.com/peilinok/fabric-whiteboard.git",
