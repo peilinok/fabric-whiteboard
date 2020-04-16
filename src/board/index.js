@@ -64,6 +64,7 @@ class Board extends Component {
 
     this.fabricCanvas.freeDrawingBrush.color = brushColor
     this.fabricCanvas.freeDrawingBrush.width = brushThickness
+    this.fabricCanvas.hoverCursor = 'pointer'
     this.fabricCanvas.on('mouse:down', this.handleCanvasMouseDown)
     this.fabricCanvas.on('mouse:up', this.handleCanvasMouseUp)
     this.fabricCanvas.on('mouse:move', this.handleCanvasMouseMove)
@@ -214,7 +215,10 @@ class Board extends Component {
     if (mode !== 'text' && preDrawerObj !== undefined) {
       preDrawerObj.set('id', uuid.v4())
       onObjectAdded(
-        JSON.stringify({ mode: mode, obj: preDrawerObj.toJSON(['id']) })
+        JSON.stringify({
+          mode: mode,
+          obj: preDrawerObj.toJSON(['id']),
+        })
       )
     }
 
@@ -246,30 +250,40 @@ class Board extends Component {
     const { onObjectAdded } = this.props
 
     e.path.set('id', uuid.v4())
-    onObjectAdded(JSON.stringify({ mode: 'pen', obj: e.path.toJSON(['id']) }))
+    onObjectAdded(
+      JSON.stringify({
+        mode: 'pen',
+        obj: e.path.toJSON(['id']),
+      })
+    )
   }
 
   handleCanvasSelectionCreated(e) {
     const { mode, enabled, onObjectsRemoved, onSelectionCreated } = this.props
     if (enabled === false) return
 
-    const selectedIds = []
-    if (e.selected) {
-      e.selected.forEach((obj) => {
-        selectedIds.push(obj.id)
-        if (mode === 'eraser') this.fabricCanvas.remove(obj)
-      })
-    }
+    const selected = []
+    e.selected.forEach((obj) => {
+      selected.push({ id: obj.id })
+      if (mode === 'eraser') this.fabricCanvas.remove(obj)
+    })
 
     if (mode === 'eraser') {
-      onObjectsRemoved(JSON.stringify(selectedIds))
+      onObjectsRemoved(JSON.stringify(selected))
 
       this.fabricCanvas.discardActiveObject()
       return
     }
 
+    const matrix = e.target.calcTransformMatrix()
+    const invertedMatrix = fabric.util.invertTransform(matrix)
+
     onSelectionCreated(
-      JSON.stringify({ target: e.target.toJSON(), selectedIds })
+      JSON.stringify({
+        target: e.target.toJSON(['id', 'type']),
+        invertedMatrix: invertedMatrix,
+        selected,
+      })
     )
   }
 
@@ -290,8 +304,13 @@ class Board extends Component {
       })
     }
 
+    const matrix = e.target.calcTransformMatrix()
+    const invertedMatrix = fabric.util.invertTransform(matrix)
+
     onSelectionUpdated(
       JSON.stringify({
+        target: e.target.toJSON(['id', 'type']),
+        invertedMatrix,
         selectedIds: selectedIds,
         deselectedIds: deselectedIds,
       })
@@ -309,6 +328,8 @@ class Board extends Component {
       })
     }
 
+    this.fabricCanvas.discardActiveObject()
+
     onSelectionCleared(JSON.stringify(deselectedIds))
   }
 
@@ -318,17 +339,26 @@ class Board extends Component {
     if (!e.target) return
 
     const objects = this.fabricCanvas.getActiveObjects()
-    const selectedIds = []
+    const selected = []
     if (objects) {
       objects.forEach((obj) => {
-        selectedIds.push(obj.id)
+        selected.push({
+          id: obj.id,
+          matrix: obj.calcTransformMatrix(),
+          obj: obj.toJSON(['id', 'type']),
+        })
       })
     }
+
+    const matrix = e.target.calcTransformMatrix()
+    const invertedMatrix = fabric.util.invertTransform(matrix)
 
     onObjectsModified(
       JSON.stringify({
         target: e.target.toJSON(['id', 'type']),
-        selectedIds: selectedIds,
+        selected: selected,
+        invertedMatrix: invertedMatrix,
+        matrix: e.target.calcTransformMatrix(),
         hasTransform: e.transform !== null && e.transform !== undefined,
         transform: e.transform,
       })
@@ -397,7 +427,10 @@ class Board extends Component {
             textObj.on('editing:exited', (e) => {
               if (textObj.text !== '') {
                 onObjectAdded(
-                  JSON.stringify({ mode: 'text', obj: textObj.toJSON(['id']) })
+                  JSON.stringify({
+                    mode: 'text',
+                    obj: textObj.toJSON(['id']),
+                  })
                 )
               } else this.fabricCanvas.remove(textObj) //auto remove empty itext
             })
