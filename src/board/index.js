@@ -247,7 +247,9 @@ class Board extends Component {
   }
 
   handleCanvasPathCreated(e) {
-    const { onObjectAdded } = this.props
+    const { enabled, onObjectAdded } = this.props
+    if (enabled === false || e.e === undefined) return
+    //console.warn('handleCanvasPathCreated', e)
 
     e.path.set('id', uuid.v4())
     onObjectAdded(
@@ -260,7 +262,8 @@ class Board extends Component {
 
   handleCanvasSelectionCreated(e) {
     const { mode, enabled, onObjectsRemoved, onSelectionCreated } = this.props
-    if (enabled === false) return
+    if (enabled === false || e.e === undefined) return
+    //console.warn('handleCanvasSelectionCreated', e)
 
     const selected = []
     e.selected.forEach((obj) => {
@@ -288,7 +291,9 @@ class Board extends Component {
   }
 
   handleCanvasSelectionUpdated(e) {
-    const { mode, onSelectionUpdated } = this.props
+    const { mode, enabled, onSelectionUpdated } = this.props
+    if (enabled === false || e.e === undefined) return
+    //console.warn('handleCanvasSelectionUpdated', e)
 
     const deselectedIds = []
     const selectedIds = []
@@ -318,7 +323,10 @@ class Board extends Component {
   }
 
   handleCanvasSelectionCleared(e) {
-    const { onSelectionCleared } = this.props
+    const { enabled, onSelectionCleared } = this.props
+    if (enabled === false || e.e === undefined) return
+
+    //console.warn('handleCanvasSelectionCleared', e)
 
     const deselectedIds = []
 
@@ -334,7 +342,9 @@ class Board extends Component {
   }
 
   handleCanvasObjectsModified(e) {
-    const { onObjectsModified } = this.props
+    const { enabled, onObjectsModified } = this.props
+    if (enabled === false || e.e === undefined) return
+    //console.warn('handleCanvasObjectsModified', e)
 
     if (!e.target) return
 
