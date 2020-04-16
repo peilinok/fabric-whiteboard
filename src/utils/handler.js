@@ -141,7 +141,12 @@ const removeWhiteBoardObjects = (ref, jsonArray) => {
   }
 }
 
-const applyMatrixWithRelationship = (targetObj, relationship, matrix) => {
+const applyMatrixWithRelationship = (
+  targetObj,
+  relationship,
+  matrix,
+  point
+) => {
   let newMatrix = fabric.util.multiplyTransformMatrices(matrix, relationship)
 
   let newTransform = fabric.util.qrDecompose(newMatrix)
@@ -151,16 +156,9 @@ const applyMatrixWithRelationship = (targetObj, relationship, matrix) => {
     flipY: false,
   })
 
-  targetObj.setPositionByOrigin(
-    {
-      x: newTransform.translateX,
-      y: newTransform.translateY,
-    },
-    'center',
-    'center'
-  )
-
   targetObj.set(newTransform)
+
+  targetObj.setPositionByOrigin(point, 'center', 'center')
   targetObj.setCoords()
 }
 
@@ -183,6 +181,7 @@ const modifyWhiteBoardObjects = (ref, json) => {
       hasTransform,
       transform,
       selected,
+      point,
     } = JSON.parse(json)
 
     console.debug('modify target:', target)
@@ -195,31 +194,15 @@ const modifyWhiteBoardObjects = (ref, json) => {
     }
 
     if (target.type !== 'activeSelection') {
-      selected.forEach((obj) => {
-        const targetObj = getWhiteBoardObjectById(fabricCanvas, obj.id)
-        if (targetObj !== null) {
-          switch (targetObj.type) {
-            case 'path':
-              targetObj.set(obj.obj)
-              targetObj.setCoords()
-              break
-            case 'line':
-            case 'circle':
-            case 'ellipse':
-            case 'textbox':
-            case 'triangle':
-              applyMatrixWithRelationship(
-                targetObj,
-                targetObj.relationship,
-                obj.matrix
-              )
-              break
-            default:
-              console.error('unsupport modify')
-              break
-          }
-        }
-      })
+      const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
+      if (targetObj !== null) {
+        applyMatrixWithRelationship(
+          targetObj,
+          targetObj.relationship,
+          matrix,
+          point
+        )
+      }
 
       fabricCanvas.requestRenderAll()
     } else {
@@ -236,6 +219,7 @@ const modifyWhiteBoardObjects = (ref, json) => {
         })
 
         sel.set(target)
+        sel.setPositionByOrigin(point, 'center', 'center')
 
         const desiredMatrix = fabric.util.multiplyTransformMatrices(
           invertedMatrix,
@@ -247,8 +231,14 @@ const modifyWhiteBoardObjects = (ref, json) => {
         fabricCanvas.setActiveObject(sel)
 
         sel.setCoords()
-      } else
-        applyMatrixWithRelationship(activeObj, activeObj.relationship, matrix)
+      } else {
+        applyMatrixWithRelationship(
+          activeObj,
+          activeObj.relationship,
+          matrix,
+          point
+        )
+      }
 
       fabricCanvas.requestRenderAll()
     }
@@ -386,7 +376,7 @@ const updateWhiteBoardSelection = (ref, selectionJson) => {
 
       fabricCanvas.setActiveObject(sel)
     } else {
-      console.warn('is not sel,set target active')
+      console.debug('is not sel,set target active')
       const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
       if (targetObj !== null) fabricCanvas.setActiveObject(targetObj)
     }
