@@ -25,12 +25,10 @@ A star will be grateful!
 - Change thickness of brushsss
 - Event of single object like new、move、scale、delete、modify
 - Operations of single object like new、move、scale、delete、modify
+- Animations
+- support custom toolbar outside of whiteboard
 
 <br/>
-
-### Todo
-
-- Animations
 
 <br/>
 
