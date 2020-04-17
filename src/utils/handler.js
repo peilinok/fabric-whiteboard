@@ -142,10 +142,13 @@ const removeWhiteBoardObjects = (ref, jsonArray) => {
 }
 
 const applyMatrixWithRelationship = (
+  fabricCanvas,
   targetObj,
   relationship,
   matrix,
-  point
+  point,
+  transform = null,
+  useAnimation = false
 ) => {
   let newMatrix = fabric.util.multiplyTransformMatrices(matrix, relationship)
 
@@ -156,10 +159,48 @@ const applyMatrixWithRelationship = (
     flipY: false,
   })
 
-  targetObj.set(newTransform)
+  if (useAnimation === false || transform === null) {
+    targetObj.set(newTransform)
+    targetObj.setPositionByOrigin(point, 'left', 'top')
+    targetObj.setCoords()
+  } else {
+    let animationProps = {}
+    let animationOptions = {
+      duration: 200,
+      onChange: fabricCanvas.renderAll.bind(fabricCanvas),
+      onComplete: () => {
+        targetObj.set(newTransform)
+        targetObj.setPositionByOrigin(point, 'left', 'top')
+        targetObj.setCoords()
+      },
+    }
+    let isSupport = true
 
-  targetObj.setPositionByOrigin(point, 'center', 'center')
-  targetObj.setCoords()
+    switch (transform.action) {
+      case 'drag':
+        animationProps.left = point.x
+        animationProps.top = point.y
+        break
+      case 'rotate':
+        animationProps.left = point.x
+        animationProps.top = point.y
+        animationProps.angle = newTransform.angle
+        if (targetObj.type === 'circle' || targetObj.type === 'ellipse')
+          isSupport = false
+        break
+      default:
+        isSupport = false
+        console.error('unsupported action', transform.action)
+        break
+    }
+
+    if (isSupport === true) targetObj.animate(animationProps, animationOptions)
+    else {
+      targetObj.set(newTransform)
+      targetObj.setPositionByOrigin(point, 'left', 'top')
+      targetObj.setCoords()
+    }
+  }
 }
 
 /**
@@ -167,7 +208,7 @@ const applyMatrixWithRelationship = (
  * @param {object} ref
  * @param {string} json
  */
-const modifyWhiteBoardObjects = (ref, json) => {
+const modifyWhiteBoardObjects = (ref, json, useAnimation = false) => {
   if (isRefValid(ref) === false) return
   const fabricCanvas = getFabricCanvasFromRef(ref)
 
@@ -184,8 +225,6 @@ const modifyWhiteBoardObjects = (ref, json) => {
       point,
     } = JSON.parse(json)
 
-    console.debug('modify target:', target)
-
     if (target.type === 'textbox' && hasTransform === false) {
       const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
       if (targetObj !== null) targetObj.set('text', target.text)
@@ -197,10 +236,13 @@ const modifyWhiteBoardObjects = (ref, json) => {
       const targetObj = getWhiteBoardObjectById(fabricCanvas, target.id)
       if (targetObj !== null) {
         applyMatrixWithRelationship(
+          fabricCanvas,
           targetObj,
           targetObj.relationship,
           matrix,
-          point
+          point,
+          transform,
+          useAnimation
         )
       }
 
@@ -218,9 +260,6 @@ const modifyWhiteBoardObjects = (ref, json) => {
           canvas: fabricCanvas,
         })
 
-        sel.set(target)
-        sel.setPositionByOrigin(point, 'center', 'center')
-
         const desiredMatrix = fabric.util.multiplyTransformMatrices(
           invertedMatrix,
           sel.calcTransformMatrix()
@@ -230,13 +269,24 @@ const modifyWhiteBoardObjects = (ref, json) => {
 
         fabricCanvas.setActiveObject(sel)
 
-        sel.setCoords()
+        applyMatrixWithRelationship(
+          fabricCanvas,
+          sel,
+          sel.relationship,
+          matrix,
+          point,
+          transform,
+          useAnimation
+        )
       } else {
         applyMatrixWithRelationship(
+          fabricCanvas,
           activeObj,
           activeObj.relationship,
           matrix,
-          point
+          point,
+          transform,
+          useAnimation
         )
       }
 

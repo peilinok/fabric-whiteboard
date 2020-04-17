@@ -5,6 +5,7 @@
 <br/>
 
 This is a whiteboard react component base on fabricjs.
+A star will be grateful!
 
 <br/>
 

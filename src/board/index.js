@@ -355,8 +355,7 @@ class Board extends Component {
         selected.push({
           id: obj.id,
           matrix: obj.calcTransformMatrix(),
-          obj: obj.toJSON(['id', 'type']),
-          point: obj.getPointByOrigin('center', 'center'),
+          point: obj.getPointByOrigin('left', 'top'),
         })
       })
     }
@@ -372,7 +371,7 @@ class Board extends Component {
         matrix: e.target.calcTransformMatrix(),
         hasTransform: e.transform !== null && e.transform !== undefined,
         transform: e.transform,
-        point: e.target.getPointByOrigin('center', 'center'),
+        point: e.target.getPointByOrigin('left', 'top'),
       })
     )
   }
