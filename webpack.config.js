@@ -5,11 +5,11 @@ module.exports = {
   mode: 'production',
 
   entry: {
-    index: './src/index.js',
+    index: './src/index.tsx',
   },
 
   output: {
-    filename: '[name].js',
+    filename: '[name].ts',
     path: path.resolve(__dirname, 'lib'),
     libraryTarget: 'commonjs2',
   },
@@ -17,7 +17,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
         exclude: /(node_modules|bower_components)/,
         use: {
           loader: 'babel-loader',

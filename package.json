@@ -2,7 +2,7 @@
   "name": "fabric-whiteboard",
   "version": "1.0.17",
   "description": "a whiteboard react component based on febric",
-  "main": "./lib/index.js",
+  "main": "./lib/index.ts",
   "repository": "https://github.com/peilinok/fabric-whiteboard.git",
   "author": "sylar <sylar.huang@all-dream.com>",
   "license": "MIT",
@@ -14,7 +14,8 @@
   "jest": {
     "moduleFileExtensions": [
       "js",
-      "jsx"
+      "jsx",
+      "tsx"
     ],
     "moduleDirectories": [
       "node_modules"
@@ -26,8 +27,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-transform-typescript": "^7.9.4",
     "@babel/preset-env": "^7.9.5",
     "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
     "babel-loader": "^8.1.0",
     "class-names": "^1.0.0",
     "clean-webpack-plugin": "^3.0.0",

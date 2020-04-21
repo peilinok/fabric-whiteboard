@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 
 import classNames from 'class-names'
 
-import modes from './utils/mode'
 import {
   getWhiteBoardData,
   loadWhiteBoardData,
@@ -21,10 +19,63 @@ import ToolBar from './toolbar'
 
 import './style.scss'
 
-class WhiteBoard extends Component {
+export {
+  getWhiteBoardData,
+  loadWhiteBoardData,
+  addWhiteBoardObject,
+  removeWhiteBoardObjects,
+  modifyWhiteBoardObjects,
+  clearWhiteBoardContext,
+  createWhiteBoardSelection,
+  updateWhiteBoardSelection,
+  clearWhiteBoardSelection,
+}
+
+export type modes =
+  | 'select'
+  | 'pen'
+  | 'line'
+  | 'dotline'
+  | 'arrow'
+  | 'text'
+  | 'rectangle'
+  | 'triangle'
+  | 'circle'
+  | 'ellipse'
+  | 'eraser'
+
+export interface WhiteBoardProps {
+  visible?: boolean
+  className?: string
+  width?: string | number
+  height?: string | number
+  showToolbar?: boolean
+  enableToolbar?: boolean
+  showBoard?: boolean
+  enableBoard?: boolean
+  mode: modes
+  fontSize?: number
+  brushColor?: string
+  brushColors?: string[]
+  brushThickness?: number
+  brushThicknessRange?: number[]
+  onModeClick?: (mode: string) => void
+  onBrushColorChange?: (color: string) => void
+  onBrushThicknessChange?: (thinkness: number) => void
+  onObjectAdded?: (object: string) => void
+  onObjectsModified?: (object: string) => void
+  onObjectsRemoved?: (object: string) => void
+  onSelectionCreated?: (object: string) => void
+  onSelectionUpdated?: (object: string) => void
+  onSelectionCleared?: (object: string) => void
+}
+
+class WhiteBoard extends Component<WhiteBoardProps, any> {
+  toolbar: ToolBar
+  board: any
+
   constructor(props) {
     super(props)
-
     this.board = undefined
     this.toolbar = undefined
   }
@@ -107,32 +158,6 @@ class WhiteBoard extends Component {
   }
 }
 
-WhiteBoard.propTypes = {
-  visible: PropTypes.bool,
-  className: PropTypes.string,
-  width: PropTypes.string,
-  height: PropTypes.string,
-  showToolbar: PropTypes.bool,
-  enableToolbar: PropTypes.bool,
-  showBoard: PropTypes.bool,
-  enableBoard: PropTypes.bool,
-  mode: PropTypes.oneOf(modes),
-  fontSize: PropTypes.number,
-  brushColor: PropTypes.string,
-  brushColors: PropTypes.arrayOf(PropTypes.string),
-  brushThickness: PropTypes.number,
-  brushThicknessRange: PropTypes.arrayOf(PropTypes.number),
-  onModeClick: PropTypes.func,
-  onBrushColorChange: PropTypes.func,
-  onBrushThicknessChange: PropTypes.func,
-  onObjectAdded: PropTypes.func,
-  onObjectsModified: PropTypes.func,
-  onObjectsRemoved: PropTypes.func,
-  onSelectionCreated: PropTypes.func,
-  onSelectionUpdated: PropTypes.func,
-  onSelectionCleared: PropTypes.func,
-}
-
 WhiteBoard.defaultProps = {
   visible: true,
   className: '',
@@ -142,7 +167,7 @@ WhiteBoard.defaultProps = {
   enableToolbar: true,
   showBoard: true,
   enableBoard: true,
-  mode: modes[0],
+  mode: 'select',
   fontSize: 22,
   brushColor: '#f44336',
   brushColors: [
@@ -158,7 +183,7 @@ WhiteBoard.defaultProps = {
   onModeClick: () => {},
   onBrushColorChange: () => {},
   onBrushThicknessChange: () => {},
-  onObjectAdded: (json) => {},
+  onObjectAdded: () => {},
   onObjectsModified: () => {},
   onObjectsRemoved: () => {},
   onSelectionCreated: () => {},
@@ -166,15 +191,4 @@ WhiteBoard.defaultProps = {
   onSelectionCleared: () => {},
 }
 
-export {
-  WhiteBoard as default,
-  getWhiteBoardData,
-  loadWhiteBoardData,
-  addWhiteBoardObject,
-  removeWhiteBoardObjects,
-  modifyWhiteBoardObjects,
-  clearWhiteBoardContext,
-  createWhiteBoardSelection,
-  updateWhiteBoardSelection,
-  clearWhiteBoardSelection,
-}
+export default WhiteBoard
