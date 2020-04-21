@@ -49,6 +49,7 @@ const getWhiteBoardObjectById = (canvas, id) => {
 /**
  * return whiteboard data in json
  * @param {object} ref
+ * @returns {string} whiteboard data in json
  */
 const getWhiteBoardData = (ref) => {
   if (isRefValid(ref) === false) return ''

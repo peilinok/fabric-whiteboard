@@ -31,7 +31,7 @@ export {
   clearWhiteBoardSelection,
 }
 
-export type modes =
+type modes =
   | 'select'
   | 'pen'
   | 'line'
@@ -44,7 +44,7 @@ export type modes =
   | 'ellipse'
   | 'eraser'
 
-export interface WhiteBoardProps {
+interface WhiteBoardProps {
   visible?: boolean
   className?: string
   width?: string | number
