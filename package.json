@@ -7,7 +7,7 @@
   "author": "sylar <sylar.huang@all-dream.com>",
   "license": "MIT",
   "scripts": {
-    "build": "webpack --progress",
+    "build": "webpack --progress && cp src/index.d.ts lib/index.d.ts",
     "watch": "webpack --watch --progress",
     "test": "jest --colors --coverage"
   },
