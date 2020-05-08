@@ -5,7 +5,7 @@
   "main": "./lib/index.js",
   "repository": "https://github.com/peilinok/fabric-whiteboard.git",
   "author": "sylar <sylar.huang@all-dream.com>",
-  "license": "MIT",
+  "license": "GPL",
   "scripts": {
     "build": "webpack --progress && cp src/index.d.ts lib/index.d.ts",
     "watch": "webpack --watch --progress",
