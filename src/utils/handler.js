@@ -207,6 +207,7 @@ const applyMatrixWithRelationship = (
  * apply modify by specified selection or object,if specified a selection will auto add one
  * @param {object} ref
  * @param {string} json
+ * @param {useAnimation} boolean
  */
 const modifyWhiteBoardObjects = (ref, json, useAnimation = false) => {
   if (isRefValid(ref) === false) return

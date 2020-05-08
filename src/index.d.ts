@@ -66,6 +66,7 @@ export const addWhiteBoardObject: (ref: any, data: string) => void
  * apply modify by specified selection or object,if specified a selection will auto add one
  * @param {object} ref
  * @param {string} json
+ * @param {useAnimation} boolean
  */
 export const modifyWhiteBoardObjects: (
   ref: any,
