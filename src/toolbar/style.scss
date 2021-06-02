@@ -96,6 +96,14 @@
       background-position: 0px -112px;
     }
 
+    .toolbar-ul-polygon {
+      background-image: url('../assets/images/tools-polygon.png');
+    }
+
+    .toolbar-ul-polygon.active {
+      background-image: url('../assets/images/tools-polygon.png');
+    }
+
     .toolbar-ul-triangle {
       background-position: -140px -112px;
     }

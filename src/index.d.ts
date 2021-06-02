@@ -8,6 +8,7 @@ declare type modes =
   | 'arrow'
   | 'text'
   | 'rectangle'
+  | 'polygon'
   | 'triangle'
   | 'circle'
   | 'ellipse'

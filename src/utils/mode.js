@@ -6,6 +6,7 @@ export default [
   'arrow',
   'text',
   'rectangle',
+  'polygon',
   'triangle',
   'circle',
   'ellipse',
